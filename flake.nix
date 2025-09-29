@@ -45,7 +45,7 @@
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.deltarnd = import .home/common.nix;
+            home-manager.users.deltarnd = import ./home/common.nix;
           }
         ];
       };
@@ -83,7 +83,7 @@
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.deltarnd = import .home/common.nix;
+            home-manager.users.deltarnd = import ./home/common.nix;
           }
         ];
       };
