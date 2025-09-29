@@ -4,15 +4,8 @@
   home.username = "deltarnd";
   home.homeDirectory = "/home/deltarnd";
 
-  home.packages = with pkgs; [
-  ];
-
   programs.direnv.enable = true;
   programs.bash.enable =true;
-  programs.ssh = {
-    enable = true;
-    startAgent = true;
-  };
 
   # HM bookkeeping
   home.stateVersion = "25.05";

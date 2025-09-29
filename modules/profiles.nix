@@ -25,6 +25,7 @@ in
       };
       programs.git.enable = true;
       programs.firefox.enable = true;
+      programs.ssh.startAgent = true;
       }
     )
 
