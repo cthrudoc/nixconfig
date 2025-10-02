@@ -17,7 +17,7 @@ in
 
       security.sudo.enable = true; # Wheel can sudo
       users.mutableUsers = false; # only declared users
-
+      # Defining user :
       users.users.deltarnd = {
         isNormalUser = true;
         extraGroups = [ "wheel" "networkmanager" ];
@@ -26,7 +26,18 @@ in
       programs.git.enable = true;
       programs.firefox.enable = true;
       programs.ssh.startAgent = true;
-      }
+      # programs.dconf.enable = true; # GNOME tweaks
+      # Universal hardware settings
+      ## Bluetooth
+      hardware.bluetooth = {
+        enable = true;
+        powerOnBoot = true;
+      };
+      services.blueman.enable = true;  # Bluetooth manager
+      # services.gnome.core-utilities.enable = true; # GNOME tweaks
+      
+      environment.systemPackages = with pkgs; [squeekboard];
+    }
     )
 
     # Gaming - Steam , 32-bit , Vulkan
@@ -49,9 +60,9 @@ in
     (lib.mkIf cfg.nvidia.enable {
       services.xserver.videoDrivers = [ "nvidia" ];
       hardware.nvidia = {
+        open = true;
         modesetting.enable = true;
         nvidiaSettings = true;
-
         };
       }
     )

@@ -23,6 +23,13 @@
 
             boot.loader.systemd-boot.enable = true;
             boot.loader.efi.canTouchEfiVariables = true;
+            boot.loader.systemd-boot.extraEntries = {
+              "windows.conf" = ''
+                title Windows 10
+                sort-key 01-windows
+                 efi /EFI/Microsoft/Boot/bootmgfw.efi
+              '';
+            }; # Adding windows to boot menu
 
             networking.hostName = "BXR";
             time.timeZone = "Europe/Warsaw";
@@ -31,6 +38,8 @@
             services.displayManager.sddm.enable = true;
             services.desktopManager.plasma6.enable = true;
             services.xserver.enable = true;
+
+            services.xserver.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session
 
             services.pipewire = {
               enable = true;
@@ -46,6 +55,8 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.deltarnd = import ./home/common.nix;
+
+            system.stateVersion = "25.05"; # don't touch, ever
           }
         ];
       };
@@ -84,6 +95,8 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.deltarnd = import ./home/common.nix;
+
+            system.stateVersion = "25.05"; # don't touch, ever
           }
         ];
       };
