@@ -15,6 +15,19 @@ in
     (lib.mkIf cfg.core.enable {
       # Universal user declaration
 
+      environment.systemPackages = with pkgs; [
+        obsidian
+        syncthing
+      ];
+
+      services.syncthing = {
+        enable = true;
+        user = "deltarnd";
+        dataDir = "/home/deltarnd";                # where folders live by default
+        configDir = "/home/deltarnd/.config/syncthing";
+        openDefaultPorts = true;
+      };
+
       security.sudo.enable = true; # Wheel can sudo
       users.mutableUsers = false; # only declared users
       # Defining user :
@@ -23,10 +36,10 @@ in
         extraGroups = [ "wheel" "networkmanager" ];
         hashedPassword = "$6$AV.V.aqHeffVIoIV$8td7wVIPxnXzV6XPhXLyGMBSWqQHYSNPQ2DOlkhAQrca3e7sr2MN1IjvMtAiROBN97W9U2i2oDyWfNvkU7JOT.";
       };
+
       programs.git.enable = true;
       programs.firefox.enable = true;
       programs.ssh.startAgent = true;
-      # programs.dconf.enable = true; # GNOME tweaks
       # Universal hardware settings
       ## Bluetooth
       hardware.bluetooth = {
@@ -34,9 +47,6 @@ in
         powerOnBoot = true;
       };
       services.blueman.enable = true;  # Bluetooth manager
-      # services.gnome.core-utilities.enable = true; # GNOME tweaks
-      
-      environment.systemPackages = with pkgs; [squeekboard];
     }
     )
 

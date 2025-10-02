@@ -7,7 +7,7 @@
   programs.direnv.enable = true;
   programs.bash.enable =true;
   
-
+  # SSH
   programs.ssh = {
     enable = true;
 
@@ -19,6 +19,7 @@
     };
   };
 
+  # Git setup for NixOS config
   programs.git = {
     enable = true;
     userName  = "cthrudoc";
@@ -26,6 +27,9 @@
 
     extraConfig.init.defaultBranch = "main";
     };
+
+  # Making Vault directory exist so Obsidian things don't break
+  home.file."Vault/.keep".text = "";
 
   # HM bookkeeping
   home.stateVersion = "25.05";

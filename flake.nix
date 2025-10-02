@@ -30,6 +30,8 @@
                  efi /EFI/Microsoft/Boot/bootmgfw.efi
               '';
             }; # Adding windows to boot menu
+            boot.kernelParams = [ "usbcore.autosuspend=-1" ]; # attempting to get Bluetooth to work on boot, makes USB ports powered all the time
+            boot.kernelModules = [ "btusb" ]; # attempting to get Bluetooth to work on boot, makes it boot early
 
             networking.hostName = "BXR";
             time.timeZone = "Europe/Warsaw";
