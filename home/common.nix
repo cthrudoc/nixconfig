@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, osConfig, ... }:
 
 {
   home.username = "deltarnd";
@@ -30,6 +30,68 @@
 
   # Making Vault directory exist so Obsidian things don't break
   home.file."Vault/.keep".text = "";
+
+  # VS Code
+  programs.vscode = {
+    enable = true;
+    package = pkgs.vscode;
+
+    # Reproducibility knobs
+    mutableExtensionsDir = false;   # manual installs won't persist (set true to trial)
+
+    profiles.default = {
+      enableUpdateCheck = false;
+      extensions =
+        (with pkgs.vscode-extensions; [
+          # Python / Jupyter
+          ms-python.python
+          ms-python.vscode-pylance
+          ms-toolsai.jupyter
+          # Vim bindings
+          vscodevim.vim
+          # Formatting for HTML/CSS/JS/JSON, etc.
+          esbenp.prettier-vscode
+        ])
+        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          # Use SRI-style hashes: "sha256-XXXX..."
+          {
+          publisher = "vintharas";
+          name = "learn-vim";
+          version = "0.0.28";
+          sha256 = "sha256-HAEKetNHUZ1HopGeQTqkrGUWZNFWD7gMaoTNbpxqI1Y=";
+          }
+          {
+          publisher = "enkia";
+          name = "tokyo-night";
+          version = "1.1.2";
+          sha256 = "sha256-oW0bkLKimpcjzxTb/yjShagjyVTUFEg198oPbY5J2hM=";
+          }
+          {
+          publisher = "samuelcolvin";
+          name = "jinjahtml";
+          version = "0.20.0";
+          sha256 = "sha256-wADL3AkLfT2N9io8h6XYgceKyltJCz5ZHZhB14ipqpM=";
+          }
+        ];
+
+      userSettings = {
+        "telemetry.telemetryLevel" = "off";
+        "update.mode" = "none";
+        "extensions.autoCheckUpdates" = false;
+        "extensions.autoUpdate" = false;
+
+        "editor.formatOnSave" = true;
+        "files.trimTrailingWhitespace" = true;
+        "files.insertFinalNewline" = true;
+
+        # Python niceties
+        "python.terminal.activateEnvironment" = true;
+        "python.analysis.typeCheckingMode" = "basic";
+        "python.testing.pytestEnabled" = true;
+      };
+    };
+  };
+
 
   # HM bookkeeping
   home.stateVersion = "25.05";

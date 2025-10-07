@@ -18,7 +18,10 @@ in
       environment.systemPackages = with pkgs; [
         obsidian
         syncthing
+        libreoffice-qt
+        realvnc-vnc-viewer
       ];
+      # in common.nix : VS Code,
 
       services.syncthing = {
         enable = true;

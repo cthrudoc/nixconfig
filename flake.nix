@@ -41,7 +41,7 @@
             services.desktopManager.plasma6.enable = true;
             services.xserver.enable = true;
 
-            services.xserver.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session
+            services.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session
 
             services.pipewire = {
               enable = true;
