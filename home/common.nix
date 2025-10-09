@@ -88,6 +88,8 @@
         "python.terminal.activateEnvironment" = true;
         "python.analysis.typeCheckingMode" = "basic";
         "python.testing.pytestEnabled" = true;
+
+        "workbench.colorTheme" = "Tokyo Night Light";
       };
     };
   };

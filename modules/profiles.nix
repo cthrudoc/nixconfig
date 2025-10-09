@@ -7,6 +7,7 @@ in
     core.enable = lib.mkEnableOption "Core baseline";
     gaming.enable = lib.mkEnableOption "Gaming";
     nvidia.enable = lib.mkEnableOption "Nvidia";
+    kdeapps.enable = lib.mkEnableOption "KdeApps";
   };
 
   config = lib.mkMerge [
@@ -80,6 +81,13 @@ in
       }
     )
 
+    # KDE apps
+    (lib.mkIf cfg.kdeapps.enable {
+      environment.systemPackages = with pkgs; [
+        krita
+        ];
+      }
+    )
 
   ];
 }

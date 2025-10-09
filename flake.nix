@@ -53,6 +53,7 @@
             profiles.core.enable = true;
             profiles.gaming.enable = true;
             profiles.nvidia.enable = true;
+            profiles.kdeapps.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
