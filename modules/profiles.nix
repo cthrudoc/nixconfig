@@ -21,6 +21,7 @@ in
         syncthing
         libreoffice-qt
         realvnc-vnc-viewer
+        anki-bin
       ];
       # in common.nix : VS Code,
 

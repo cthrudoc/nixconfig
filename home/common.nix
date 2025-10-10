@@ -6,7 +6,7 @@
 
   programs.direnv.enable = true;
   programs.bash.enable =true;
-  
+
   # SSH
   programs.ssh = {
     enable = true;
@@ -53,7 +53,6 @@
           esbenp.prettier-vscode
         ])
         ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          # Use SRI-style hashes: "sha256-XXXX..."
           {
           publisher = "vintharas";
           name = "learn-vim";
@@ -72,6 +71,12 @@
           version = "0.20.0";
           sha256 = "sha256-wADL3AkLfT2N9io8h6XYgceKyltJCz5ZHZhB14ipqpM=";
           }
+          {
+          publisher = "jnoortheen";
+          name = "nix-ide";
+          version = "0.5.0";
+          sha256 = "sha256-jVuGQzMspbMojYq+af5fmuiaS3l3moG8L8Kyf40vots=";
+          }
         ];
 
       userSettings = {
@@ -89,7 +94,7 @@
         "python.analysis.typeCheckingMode" = "basic";
         "python.testing.pytestEnabled" = true;
 
-        "workbench.colorTheme" = "Tokyo Night Light";
+        "workbench.colorTheme" = "Tokyo Night";
       };
     };
   };
