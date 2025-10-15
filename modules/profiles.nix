@@ -9,6 +9,7 @@ in
     nvidia.enable = lib.mkEnableOption "Nvidia";
     kdeapps.enable = lib.mkEnableOption "KdeApps";
     globalpython.enable = lib.mkEnableOption "GlobalPython";
+    secureboot.enable = lib.mkEnableOption "SecureBoot";
   };
 
   config = lib.mkMerge [
@@ -101,5 +102,20 @@ in
     }
     )
 
+    # Securebooot using lanzaboote
+    (lib.mkIf cfg.secureboot.enable {
+      boot.bootspec.enable = true;
+
+      # lanzaboote replaces systemd-boot's module
+      boot.loader.systemd-boot.enable = lib.mkForce false;
+      boot.loader.efi.canTouchEfiVariables = true;
+
+      boot.lanzaboote = {
+        enable = true;
+        pkiBundle = "/etc/secureboot";
+        # explicit path to the systemd EFI stub
+      };
+    }
+    )
   ];
 }

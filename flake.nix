@@ -5,9 +5,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    lanzaboote.url = "github:nix-community/lanzaboote";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, lanzaboote, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
@@ -15,13 +16,14 @@
       nixosConfigurations.BXR = lib.nixosSystem {
         inherit system;
         modules = [
+          lanzaboote.nixosModules.lanzaboote
           ./hosts/BXR/hardware-configuration.nix
           ./modules/profiles.nix
+
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
             nixpkgs.config.allowUnfree = true;
 
-            boot.loader.systemd-boot.enable = true;
             boot.loader.efi.canTouchEfiVariables = true;
             boot.loader.systemd-boot.extraEntries = {
               "windows.conf" = ''
@@ -55,6 +57,7 @@
             profiles.nvidia.enable = true;
             profiles.kdeapps.enable = true;
             profiles.globalpython.enable = true;
+            profiles.secureboot.enable=true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
