@@ -6,6 +6,7 @@
 
   programs.direnv.enable = true;
   programs.bash.enable =true;
+  programs.direnv.nix-direnv.enable = true;
 
   # SSH
   programs.ssh = {
@@ -37,7 +38,7 @@
     package = pkgs.vscode;
 
     # Reproducibility knobs
-    mutableExtensionsDir = false;   # manual installs won't persist (set true to trial)
+    mutableExtensionsDir = false;   # manual installs won't persist if set to true(?)
 
     profiles.default = {
       enableUpdateCheck = false;
@@ -59,12 +60,12 @@
           version = "0.0.28";
           sha256 = "sha256-HAEKetNHUZ1HopGeQTqkrGUWZNFWD7gMaoTNbpxqI1Y=";
           }
-          {
-          publisher = "enkia";
-          name = "tokyo-night";
-          version = "1.1.2";
-          sha256 = "sha256-oW0bkLKimpcjzxTb/yjShagjyVTUFEg198oPbY5J2hM=";
-          }
+          # {
+          # publisher = "enkia";
+          # name = "tokyo-night";
+          # version = "1.1.2";
+          # sha256 = "sha256-oW0bkLKimpcjzxTb/yjShagjyVTUFEg198oPbY5J2hM=";
+          # }
           {
           publisher = "samuelcolvin";
           name = "jinjahtml";
@@ -77,6 +78,12 @@
           version = "0.5.0";
           sha256 = "sha256-jVuGQzMspbMojYq+af5fmuiaS3l3moG8L8Kyf40vots=";
           }
+          {
+          publisher = "slhsxcmy";
+          name = "vscode-double-line-numbers";
+          version = "0.1.4";
+          sha256 = "sha256-07Iiq8s6+8o7LfpcTCvwAyleBMnjEiRzV9BASoAig4A=";
+          }
         ];
 
       userSettings = {
@@ -85,7 +92,6 @@
         "extensions.autoCheckUpdates" = false;
         "extensions.autoUpdate" = false;
 
-        "editor.formatOnSave" = true;
         "files.trimTrailingWhitespace" = true;
         "files.insertFinalNewline" = true;
 
@@ -94,8 +100,22 @@
         "python.analysis.typeCheckingMode" = "basic";
         "python.testing.pytestEnabled" = true;
 
-        "workbench.colorTheme" = "Tokyo Night";
+        #"workbench.colorTheme" = "Tokyo Night";
+
+        "editor.cursorBlinking" = "phase";
+        "editor.cursorSmoothCaretAnimation" = "on";
+        "editor.lineNumbers" = "on";
       };
+
+      keybindings = [
+        # Unbind MRU switcher defaults
+        { key = "ctrl+tab";         command = "-workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup"; }
+        { key = "ctrl+shift+tab";   command = "-workbench.action.quickOpenLeastRecentlyUsedEditorInGroup"; }
+
+        # Bind by-tab-order switching in the current group
+        { key = "ctrl+tab";         command = "workbench.action.nextEditorInGroup"; }
+        { key = "ctrl+shift+tab";   command = "workbench.action.previousEditorInGroup"; }
+      ];
     };
   };
 

@@ -8,6 +8,7 @@ in
     gaming.enable = lib.mkEnableOption "Gaming";
     nvidia.enable = lib.mkEnableOption "Nvidia";
     kdeapps.enable = lib.mkEnableOption "KdeApps";
+    globalpython.enable = lib.mkEnableOption "GlobalPython";
   };
 
   config = lib.mkMerge [
@@ -22,8 +23,10 @@ in
         libreoffice-qt
         realvnc-vnc-viewer
         anki-bin
+        vscode
       ];
       # in common.nix : VS Code,
+      # anki-bin : nixized config at this date [[10.10.2025]] is not supported, per NixOS wiki.
 
       services.syncthing = {
         enable = true;
@@ -88,6 +91,14 @@ in
         krita
         ];
       }
+    )
+
+    # Global Python
+    (lib.mkIf cfg.globalpython.enable {
+      environment.systemPackages = with pkgs; [
+        python312
+      ];
+    }
     )
 
   ];
