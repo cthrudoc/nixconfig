@@ -58,7 +58,7 @@
             profiles.kdeapps.enable = true;
             profiles.globalpython.enable = true;
             profiles.secureboot.enable = true;
-            profiles.ocr.enable = true;
+            profiles.netsec.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

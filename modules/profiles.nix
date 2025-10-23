@@ -11,6 +11,7 @@ in
     globalpython.enable = lib.mkEnableOption "GlobalPython";
     secureboot.enable = lib.mkEnableOption "SecureBoot";
     ocr.enable = lib.mkEnableOption "OCR";
+    netsec.enable = lib.mkEnableOption "netsec";
   };
 
   config = lib.mkMerge [
@@ -135,6 +136,17 @@ in
       environment.etc."tessdata/pol.traineddata".source = pkgs.tesseract.languages.pol;
       environment.etc."tessdata/eng.traineddata".source = pkgs.tesseract.languages.eng;
       environment.variables.TESSDATA_PREFIX = "/etc";
+    })
+
+    (lib.mkIf cfg.netsec.enable {
+      environment.systemPackages = with pkgs; [
+        mullvad-vpn
+      ];
+      services.mullvad-vpn = {
+        enable = true;
+        package = pkgs.mullvad-vpn;
+      };
+      services.dbus.enable = true;
     })
   ];
 }
