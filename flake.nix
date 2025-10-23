@@ -57,7 +57,8 @@
             profiles.nvidia.enable = true;
             profiles.kdeapps.enable = true;
             profiles.globalpython.enable = true;
-            profiles.secureboot.enable=true;
+            profiles.secureboot.enable = true;
+            profiles.ocr.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

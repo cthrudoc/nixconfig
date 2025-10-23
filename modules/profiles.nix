@@ -10,6 +10,7 @@ in
     kdeapps.enable = lib.mkEnableOption "KdeApps";
     globalpython.enable = lib.mkEnableOption "GlobalPython";
     secureboot.enable = lib.mkEnableOption "SecureBoot";
+    ocr.enable = lib.mkEnableOption "OCR";
   };
 
   config = lib.mkMerge [
@@ -99,6 +100,13 @@ in
       environment.systemPackages = with pkgs; [
         python312
       ];
+      # tryig to make numpy work [TODO]
+      programs.nix-ld.enable = true;
+      programs.nix-ld.libraries = with pkgs; [
+        stdenv.cc.cc
+        zlib
+        glibc
+      ];
     }
     )
 
@@ -117,5 +125,16 @@ in
       };
     }
     )
+
+    # OCR
+    (lib.mkIf cfg.ocr.enable {
+      environment.systemPackages = with pkgs; [
+        ocrmypdf
+        tesseract
+      ];
+      environment.etc."tessdata/pol.traineddata".source = pkgs.tesseract.languages.pol;
+      environment.etc."tessdata/eng.traineddata".source = pkgs.tesseract.languages.eng;
+      environment.variables.TESSDATA_PREFIX = "/etc";
+    })
   ];
 }
