@@ -44,22 +44,20 @@
       enableUpdateCheck = false;
       extensions =
         (with pkgs.vscode-extensions; [
-          # Python / Jupyter
+            # Python / Jupyter
           ms-python.python
           ms-python.vscode-pylance
           ms-toolsai.jupyter
-          # Vim bindings
-          vscodevim.vim
-          # Formatting for HTML/CSS/JS/JSON, etc.
-          esbenp.prettier-vscode
+          # vscodevim.vim          # Vim bindings
+          esbenp.prettier-vscode # Formatting for HTML/CSS/JS/JSON, etc.
         ])
         ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          {
-          publisher = "vintharas";
-          name = "learn-vim";
-          version = "0.0.28";
-          sha256 = "sha256-HAEKetNHUZ1HopGeQTqkrGUWZNFWD7gMaoTNbpxqI1Y=";
-          }
+          # {
+          # publisher = "vintharas";
+          # name = "learn-vim";
+          # version = "0.0.28";
+          # sha256 = "sha256-HAEKetNHUZ1HopGeQTqkrGUWZNFWD7gMaoTNbpxqI1Y=";
+          # }
           # {
           # publisher = "enkia";
           # name = "tokyo-night";

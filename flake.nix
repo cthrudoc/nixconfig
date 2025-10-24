@@ -12,6 +12,7 @@
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
+      pkgs = import nixpkgs {inherit system;};
     in {
       nixosConfigurations.BXR = lib.nixosSystem {
         inherit system;
@@ -108,5 +109,22 @@
           }
         ];
       };
+
+    devShells.${system}.py = pkgs.mkShell {
+      packages = with pkgs; [
+        python312
+        git pkg-config
+        gcc gfortran
+        blas lapack
+        openssl libffi zlib
+        openblas
+      ];
+      shellHook = ''
+        if [ -f /etc/profile.d/nix-ld.sh ]; then . /etc/profile.d/nix-ld.sh; fi
+        unset PYTHONPATH
+        export PS1="(dev) $PS1"
+        '';
     };
+  };
+
 }
