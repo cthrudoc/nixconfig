@@ -110,21 +110,30 @@
         ];
       };
 
-    devShells.${system}.py = pkgs.mkShell {
-      packages = with pkgs; [
-        python312
-        git pkg-config
-        gcc gfortran
-        blas lapack
-        openssl libffi zlib
-        openblas
-      ];
-      shellHook = ''
-        if [ -f /etc/profile.d/nix-ld.sh ]; then . /etc/profile.d/nix-ld.sh; fi
-        unset PYTHONPATH
-        export PS1="(dev) $PS1"
+    devShells.${system} = rec {
+
+      py-pipwheel = pkgs.mkShell {
+        packages = with pkgs; [
+          python312
+        ];
+
+        # expose libstdc++ & friends on the search path for wheels
+        env.LD_LIBRARY_PATH = lib.makeLibraryPath [
+          (lib.getLib pkgs.stdenv.cc.cc)  # libstdc++.so.6
+          pkgs.zlib
+          pkgs.glibc
+        ];
+
+        shellHook = ''
+          # ensure the manylinux loader shim is present in devshells
+          if [ -f /etc/profile.d/nix-ld.sh ]; then
+            . /etc/profile.d/nix-ld.sh
+          fi
+          # keep venvs sane
+          unset PYTHONPATH
+          export PS1="(py-pipwheel) $PS1"
         '';
+      };
     };
   };
-
 }

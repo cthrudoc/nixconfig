@@ -100,6 +100,7 @@ in
     (lib.mkIf cfg.globalpython.enable {
       environment.systemPackages = with pkgs; [
         python312
+        stdenv.cc.cc
       ];
       # tryig to make numpy work [TODO]
       programs.nix-ld.enable = true;
