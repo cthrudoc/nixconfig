@@ -1,6 +1,10 @@
-{ config, pkgs, lib, osConfig, ... }:
+{ config, pkgs, lib, osConfig, pm, ... }:
 
 {
+  imports = [
+    pm.homeManagerModules.plasma-manager
+  ];
+
   home.username = "deltarnd";
   home.homeDirectory = "/home/deltarnd";
 
@@ -103,6 +107,8 @@
         "editor.cursorBlinking" = "phase";
         "editor.cursorSmoothCaretAnimation" = "on";
         "editor.lineNumbers" = "on";
+
+        "window.titleBarStyle" = "native";
       };
 
       keybindings = [

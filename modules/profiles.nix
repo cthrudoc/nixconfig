@@ -20,6 +20,37 @@ in
     (lib.mkIf cfg.core.enable {
       # Universal user declaration
 
+      # GC
+      # "keep 5 generations" GC service
+      systemd.services.nix-keep-5-gens = {
+        description = "Keep only last 5 NixOS system generations";
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        script = ''
+          set -euo pipefail
+
+          # Keep only the 5 newest generations of the system profile
+          /run/current-system/sw/bin/nix-env \
+            --profile /nix/var/nix/profiles/system \
+            --delete-generations +5 || true
+
+          # Collect garbage for anything no longer referenced
+          /run/current-system/sw/bin/nix-collect-garbage
+        '';
+      };
+
+      systemd.timers.nix-keep-5-gens = {
+        description = "Run nix-keep-5-gens daily";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "daily";
+          Persistent = true;
+        };
+      };
+      nix.settings.auto-optimise-store = true;
+
+      # Packages I always want
       environment.systemPackages = with pkgs; [
         obsidian
         syncthing
@@ -92,6 +123,13 @@ in
     (lib.mkIf cfg.kdeapps.enable {
       environment.systemPackages = with pkgs; [
         krita
+        # KDE/Plasma apps (Qt6):
+        kdePackages.kdeconnect-kde
+        kdePackages.filelight
+        kdePackages.partitionmanager
+        kdePackages.kfind
+        kdePackages.kcolorchooser
+        kdePackages.kmag
         ];
       }
     )

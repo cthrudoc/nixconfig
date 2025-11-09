@@ -6,9 +6,11 @@
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     lanzaboote.url = "github:nix-community/lanzaboote";
+    plasma-manager.url = "github:nix-community/plasma-manager";
+    plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, lanzaboote, ... }:
+  outputs = { self, nixpkgs, home-manager, lanzaboote, plasma-manager, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
@@ -63,6 +65,9 @@
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              pm = plasma-manager;
+            };
             home-manager.users.deltarnd = import ./home/common.nix;
 
             system.stateVersion = "25.05"; # don't touch, ever
@@ -103,6 +108,9 @@
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              pm = plasma-manager;
+            };
             home-manager.users.deltarnd = import ./home/common.nix;
 
             system.stateVersion = "25.05"; # don't touch, ever
