@@ -12,6 +12,7 @@ in
     secureboot.enable = lib.mkEnableOption "SecureBoot";
     ocr.enable = lib.mkEnableOption "OCR";
     netsec.enable = lib.mkEnableOption "netsec";
+    starsector.enable = lib.mkEnableOption "starsector";
   };
 
   config = lib.mkMerge [
@@ -177,6 +178,7 @@ in
       environment.variables.TESSDATA_PREFIX = "/etc";
     })
 
+    # Netsec : VPN
     (lib.mkIf cfg.netsec.enable {
       environment.systemPackages = with pkgs; [
         mullvad-vpn
@@ -186,6 +188,13 @@ in
         package = pkgs.mullvad-vpn;
       };
       services.dbus.enable = true;
+    })
+
+    # Starsector
+    (lib.mkIf cfg.starsector.enable {
+      environment.systemPackages = with pkgs; [
+        starsector
+      ];
     })
   ];
 }

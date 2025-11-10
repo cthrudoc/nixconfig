@@ -62,6 +62,7 @@
             profiles.globalpython.enable = true;
             profiles.secureboot.enable = true;
             profiles.netsec.enable = true;
+            profiles.starsector.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

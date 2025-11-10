@@ -2,7 +2,7 @@
 
 {
   imports = [
-    pm.homeManagerModules.plasma-manager
+    pm.homeModules.plasma-manager
   ];
 
   home.username = "deltarnd";
@@ -123,6 +123,39 @@
     };
   };
 
+  home.packages = [
+    (pkgs.writeShellScriptBin "plasma-theme-light" ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+      plasma-apply-colorscheme BreezeLight
+      plasma-apply-colorscheme --accent-color "#AA7300"
+      plasma-apply-wallpaperimage "/home/deltarnd/Pictures/wallpapers/light.png"
+    '')
+
+    (pkgs.writeShellScriptBin "plasma-theme-dark" ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+      plasma-apply-colorscheme BreezeDark
+      plasma-apply-colorscheme --accent-color "#AA7300"
+      plasma-apply-wallpaperimage "/home/deltarnd/Pictures/wallpapers/night.png"
+    '')
+  ];
+
+  programs.plasma = {
+    enable = true;
+
+    hotkeys.commands."switch-to-light" = {
+      name = "Switch to light theme";
+      key = "Meta+Ctrl+L";
+      command = "plasma-theme-light";
+    };
+
+    hotkeys.commands."switch-to-dark" = {
+      name = "Switch to dark theme";
+      key = "Meta+Ctrl+K";
+      command = "plasma-theme-dark";
+    };
+  };
 
   # HM bookkeeping
   home.stateVersion = "25.05";
