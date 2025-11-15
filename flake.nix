@@ -27,6 +27,7 @@
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
             nixpkgs.config.allowUnfree = true;
 
+            # Adding windows to boot menu
             boot.loader.efi.canTouchEfiVariables = true;
             boot.loader.systemd-boot.extraEntries = {
               "windows.conf" = ''
@@ -34,27 +35,19 @@
                 sort-key 01-windows
                  efi /EFI/Microsoft/Boot/bootmgfw.efi
               '';
-            }; # Adding windows to boot menu
-            boot.kernelParams = [ "usbcore.autosuspend=-1" ]; # attempting to get Bluetooth to work on boot, makes USB ports powered all the time
-            boot.kernelModules = [ "btusb" ]; # attempting to get Bluetooth to work on boot, makes it boot early
+            };
+
+            # boot.kernelParams = [ "usbcore.autosuspend=-1" ]; # attempting to get Bluetooth to work on boot, makes USB ports powered all the time
+            # boot.kernelModules = [ "btusb" ]; # attempting to get Bluetooth to work on boot, makes it boot early
 
             networking.hostName = "BXR";
             time.timeZone = "Europe/Warsaw";
             networking.networkmanager.enable = true;
 
-            services.displayManager.sddm.enable = true;
-            services.desktopManager.plasma6.enable = true;
-            services.xserver.enable = true;
-
-            services.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session
-
-            services.pipewire = {
-              enable = true;
-              alsa.enable = true;
-              alsa.support32Bit = true;
-              pulse.enable = true;
-            };
-
+            profiles.base.enable = true;
+            profiles.desktop.enable = true;
+            profiles.bluetooth.enable = true;
+            profiles.syncthing.enable = true;
             profiles.core.enable = true;
             profiles.gaming.enable = true;
             profiles.nvidia.enable = true;
@@ -93,19 +86,9 @@
             time.timeZone = "Europe/Warsaw";
             networking.networkmanager.enable = true;
 
-            services.displayManager.sddm.enable = true;
-            services.desktopManager.plasma6.enable = true;
-            services.xserver.enable = true;
-
-            services.pipewire = {
-              enable = true;
-              alsa.enable = true;
-              alsa.support32Bit = true;
-              pulse.enable = true;
-            };
-
+            profiles.base.enable = true;
+            profiles.desktop.enable = true;
             profiles.core.enable = true;
-            profiles.gaming.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

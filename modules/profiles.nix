@@ -4,7 +4,11 @@ let
 in
 {
   options.profiles = {
-    core.enable = lib.mkEnableOption "Core baseline";
+    base.enable = lib.mkEnableOption "Default User, GC, minimal packaging";
+    desktop.enable = lib.mkEnableOption "GUI + audio";
+    bluetooth.enable = lib.mkEnableOption "Bluetooth" ;
+    syncthing.enable = lib.mkEnableOption "Syncthing" ;
+    core.enable = lib.mkEnableOption "Core applications";
     gaming.enable = lib.mkEnableOption "Gaming";
     nvidia.enable = lib.mkEnableOption "Nvidia";
     kdeapps.enable = lib.mkEnableOption "KdeApps";
@@ -17,12 +21,10 @@ in
 
   config = lib.mkMerge [
 
-    # Core :
-    (lib.mkIf cfg.core.enable {
-      # Universal user declaration
+    # BASE of every system
+    (lib.mkIf cfg.base.enable {
 
-      # GC
-      # "keep 5 generations" GC service
+      # GC "keep 5 generations"
       systemd.services.nix-keep-5-gens = {
         description = "Keep only last 5 NixOS system generations";
         serviceConfig = {
@@ -51,7 +53,68 @@ in
       };
       nix.settings.auto-optimise-store = true;
 
-      # Packages I always want
+
+      # Universal User definition
+      security.sudo.enable = true; # Wheel can sudo
+      users.mutableUsers = false; # only declared users
+      # Defining user :
+      users.users.deltarnd = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "networkmanager" ];
+        hashedPassword = "$6$AV.V.aqHeffVIoIV$8td7wVIPxnXzV6XPhXLyGMBSWqQHYSNPQ2DOlkhAQrca3e7sr2MN1IjvMtAiROBN97W9U2i2oDyWfNvkU7JOT.";
+      };
+
+      # basic firewall
+      networking.firewall = {
+        enable = true;
+        allowedTCPPorts = [ 22 ];
+      };
+
+      # Essential packages
+      environment.systemPackages = with pkgs; [
+        git
+      ];
+      programs.ssh.startAgent = true;
+    })
+
+    # Desktop (GUI + audio)
+    (lib.mkIf cfg.desktop.enable {
+      services.displayManager.sddm.enable = true;
+      services.desktopManager.plasma6.enable = true;
+      services.xserver.enable = true;
+      services.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session
+
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+      };
+      programs.firefox.enable = true; # at least one browser
+    })
+
+    # Bluetooth
+    (lib.mkIf cfg.bluetooth.enable {
+      hardware.bluetooth = {
+        enable = true;
+        powerOnBoot = true;
+      };
+      services.blueman.enable = true;  # Bluetooth manager
+    })
+
+    # Syncthing :
+    (lib.mkIf cfg.Syncthing.enable {
+      services.syncthing = {
+        enable = true;
+        user = "deltarnd";
+        dataDir = "/home/deltarnd";                # where folders live by default
+        configDir = "/home/deltarnd/.config/syncthing";
+        openDefaultPorts = true;
+      };
+    })
+
+    # Core apps
+    (lib.mkIf cfg.core.enable {
       environment.systemPackages = with pkgs; [
         obsidian
         syncthing
@@ -62,36 +125,7 @@ in
       ];
       # in common.nix : VS Code,
       # anki-bin : nixized config at this date [[10.10.2025]] is not supported, per NixOS wiki.
-
-      services.syncthing = {
-        enable = true;
-        user = "deltarnd";
-        dataDir = "/home/deltarnd";                # where folders live by default
-        configDir = "/home/deltarnd/.config/syncthing";
-        openDefaultPorts = true;
-      };
-
-      security.sudo.enable = true; # Wheel can sudo
-      users.mutableUsers = false; # only declared users
-      # Defining user :
-      users.users.deltarnd = {
-        isNormalUser = true;
-        extraGroups = [ "wheel" "networkmanager" ];
-        hashedPassword = "$6$AV.V.aqHeffVIoIV$8td7wVIPxnXzV6XPhXLyGMBSWqQHYSNPQ2DOlkhAQrca3e7sr2MN1IjvMtAiROBN97W9U2i2oDyWfNvkU7JOT.";
-      };
-
-      programs.git.enable = true;
-      programs.firefox.enable = true;
-      programs.ssh.startAgent = true;
-      # Universal hardware settings
-      ## Bluetooth
-      hardware.bluetooth = {
-        enable = true;
-        powerOnBoot = true;
-      };
-      services.blueman.enable = true;  # Bluetooth manager
-    }
-    )
+    })
 
     # Gaming - Steam , 32-bit , Vulkan
     (lib.mkIf cfg.gaming.enable {
@@ -113,9 +147,11 @@ in
     (lib.mkIf cfg.nvidia.enable {
       services.xserver.videoDrivers = [ "nvidia" ];
       hardware.nvidia = {
-        open = true;
+        open = false;
         modesetting.enable = true;
         nvidiaSettings = true;
+        powerManagement.enable = true;
+        package = config.boot.kernelPackages.nvidiaPackages.production;
         };
       }
     )
