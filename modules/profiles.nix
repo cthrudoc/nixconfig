@@ -8,6 +8,7 @@ in
     desktop.enable = lib.mkEnableOption "GUI + audio";
     bluetooth.enable = lib.mkEnableOption "Bluetooth" ;
     syncthing.enable = lib.mkEnableOption "Syncthing" ;
+    VNC.enable = lib.mkEnableOption "NVC";
     core.enable = lib.mkEnableOption "Core applications";
     gaming.enable = lib.mkEnableOption "Gaming";
     nvidia.enable = lib.mkEnableOption "Nvidia";
@@ -103,7 +104,7 @@ in
     })
 
     # Syncthing :
-    (lib.mkIf cfg.Syncthing.enable {
+    (lib.mkIf cfg.syncthing.enable {
       services.syncthing = {
         enable = true;
         user = "deltarnd";
@@ -111,6 +112,16 @@ in
         configDir = "/home/deltarnd/.config/syncthing";
         openDefaultPorts = true;
       };
+    })
+
+    # VNC clients for both sending and recieving
+    (lib.mkIf cfg.VNC.enable {
+      environment.systemPackages = with pkgs; [
+        kdePackages.krfb   # KDE VNC server (shares current Plasma X11/Wayland session)
+        kdePackages.krdc   # KDE VNC/RDP client (GUI)
+        tigervnc           # vncviewer + vncserver
+      ];
+      networking.firewall.allowedTCPPorts = [ 5900 ];
     })
 
     # Core apps

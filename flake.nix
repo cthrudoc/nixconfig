@@ -48,6 +48,7 @@
             profiles.desktop.enable = true;
             profiles.bluetooth.enable = true;
             profiles.syncthing.enable = true;
+            profiles.VNC.enable = true;
             profiles.core.enable = true;
             profiles.gaming.enable = true;
             profiles.nvidia.enable = true;
@@ -89,6 +90,35 @@
             profiles.base.enable = true;
             profiles.desktop.enable = true;
             profiles.core.enable = true;
+
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              pm = plasma-manager;
+            };
+            home-manager.users.deltarnd = import ./home/common.nix;
+
+            system.stateVersion = "25.05"; # don't touch, ever
+          }
+        ];
+      };
+
+      nixosConfigurations.M720 = lib.nixosSystem {
+        inherit system;
+        modules = [
+          ./hosts/M720/hardware-configuration.nix
+          ./modules/profiles.nix
+
+          home-manager.nixosModules.home-manager {
+            nix.settings.experimental-features = [ "nix-command" "flakes" ];
+            nixpkgs.config.allowUnfree = true;
+
+            networking.hostName = "M720";
+            time.timeZone = "Europe/Warsaw";
+            networking.networkmanager.enable = true;
+
+            profiles.base.enable = true;
+            profiles.globalpython.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
