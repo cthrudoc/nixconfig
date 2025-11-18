@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ...}:
+{ config, pkgs, lib, unstable ? pkgs, ...}:
 let
   cfg = config.profiles;
 in
@@ -155,8 +155,6 @@ in
       };
     })
 
-
-
     # Core apps
     (lib.mkIf cfg.core.enable {
       environment.systemPackages = with pkgs; [
@@ -212,6 +210,20 @@ in
         kdePackages.kcolorchooser
         kdePackages.kmag
         ];
+
+        # needs to be enabled for kdeconnect to work
+        programs.kdeconnect.enable = true;
+        services.avahi = {
+          enable = true;
+          nssmdns4 = true;
+          openFirewall = true;
+        };
+
+        # manual opening of the ports for KDE Connect.
+        networking.firewall.allowedTCPPorts = [ 1714 1715 1716 1717 1718 1719 ];
+        networking.firewall.allowedUDPPorts = [ 1714 1715 1716 1717 1718 1719 ];
+
+
       }
     )
 
@@ -273,7 +285,7 @@ in
     # Starsector
     (lib.mkIf cfg.starsector.enable {
       environment.systemPackages = with pkgs; [
-        starsector
+        unstable.starsector
       ];
     })
   ];

@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     lanzaboote.url = "github:nix-community/lanzaboote";
@@ -10,14 +11,21 @@
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, lanzaboote, plasma-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, lanzaboote, plasma-manager, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
       pkgs = import nixpkgs {inherit system;};
+      unstable = import nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in {
       nixosConfigurations.BXR = lib.nixosSystem {
         inherit system;
+        specialArgs = {
+          inherit unstable;
+        };
         modules = [
           lanzaboote.nixosModules.lanzaboote
           ./hosts/BXR/hardware-configuration.nix
@@ -48,7 +56,7 @@
             profiles.desktop.enable = true;
             profiles.bluetooth.enable = true;
             profiles.syncthing.enable = true;
-            profiles.VNC.enable = true;
+            # profiles.VNC.enable = true;
             profiles.core.enable = true;
             profiles.gaming.enable = true;
             profiles.nvidia.enable = true;
