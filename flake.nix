@@ -56,7 +56,7 @@
             profiles.desktop.enable = true;
             profiles.bluetooth.enable = true;
             profiles.syncthing.enable = true;
-            # profiles.VNC.enable = true;
+            profiles.VNC.enable = true;
             profiles.core.enable = true;
             profiles.gaming.enable = true;
             profiles.nvidia.enable = true;
@@ -162,6 +162,33 @@
           # keep venvs sane
           unset PYTHONPATH
           export PS1="(py-pipwheel) $PS1"
+        '';
+      };
+
+      py-playwright = pkgs.mkShell {
+        packages = with pkgs; [
+          python312
+          nodejs                 # Playwright's driver is a Node tool
+          playwright-driver      # prebuilt browsers + driver, Nix-wrapped
+          chromium
+        ];
+
+        env.LD_LIBRARY_PATH = lib.makeLibraryPath [
+          (lib.getLib pkgs.stdenv.cc.cc)  # libstdc++.so.6
+          pkgs.zlib
+          pkgs.glibc
+        ];
+
+        # Tell Python Playwright to use Nix’s browsers and skip downloads
+        env.PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+        env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+
+        shellHook = ''
+          if [ -f /etc/profile.d/nix-ld.sh ]; then
+          . /etc/profile.d/nix-ld.sh
+          fi
+          unset PYTHONPATH
+          export PS1="(py-playwright) $PS1"
         '';
       };
     };

@@ -116,7 +116,6 @@ in
 
     # VNC: true extended desktop over LAN (X11 only)
     (lib.mkIf cfg.VNC.enable {
-
       environment.systemPackages = with pkgs; [
         x11vnc
         tigervnc
@@ -128,20 +127,15 @@ in
         description = "Export secondary X11 monitor over VNC (x11vnc clipped to xinerama1)";
         wants = [ "display-manager.service" ];
         after = [ "display-manager.service" ];
-        wantedBy = [ "multi-user.target" ];
 
-        # Only even *try* to start if an X11 display :0 socket exists.
-        # If you're on Wayland or no X session, systemd will mark the
-        # service as "skipped" instead of "failed", so rebuilds are clean.
         unitConfig = {
           ConditionPathExists = "/tmp/.X11-unix/X0";
         };
 
         serviceConfig = {
           Type = "simple";
-          User = "deltarnd";      # your user
+          User = "deltarnd";
           Environment = "DISPLAY=:0";
-
           ExecStart =
             "${pkgs.x11vnc}/bin/x11vnc "
             + "-display :0 "
@@ -149,7 +143,6 @@ in
             + "-forever -shared -noxdamage "
             + "-rfbport 5900 "
             + "-nopw";
-
           Restart = "on-failure";
         };
       };
