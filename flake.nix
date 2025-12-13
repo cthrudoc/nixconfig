@@ -127,6 +127,7 @@
 
             profiles.base.enable = true;
             profiles.globalpython.enable = true;
+            profiles.desktop.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

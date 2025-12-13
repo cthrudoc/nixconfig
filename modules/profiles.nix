@@ -275,10 +275,11 @@ in
       services.dbus.enable = true;
     })
 
-    # Starsector
+    # Starsector & minecraft temporarily
     (lib.mkIf cfg.starsector.enable {
       environment.systemPackages = with pkgs; [
         unstable.starsector
+        prismlauncher
       ];
     })
   ];
