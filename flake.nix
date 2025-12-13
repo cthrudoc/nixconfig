@@ -65,6 +65,7 @@
             profiles.secureboot.enable = true;
             profiles.netsec.enable = true;
             profiles.starsector.enable = true;
+            profiles.minecraft.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -128,6 +129,7 @@
             profiles.base.enable = true;
             profiles.globalpython.enable = true;
             profiles.desktop.enable = true;
+            profiles.minecraftserver = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

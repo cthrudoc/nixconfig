@@ -18,6 +18,8 @@ in
     ocr.enable = lib.mkEnableOption "OCR";
     netsec.enable = lib.mkEnableOption "netsec";
     starsector.enable = lib.mkEnableOption "starsector";
+    minecraft.enable = lib.mkEnableOption "minecraft";
+    minecraftserver.enable = lib.mkEnableOption "minecraftserver";
   };
 
   config = lib.mkMerge [
@@ -282,5 +284,84 @@ in
         prismlauncher
       ];
     })
+
+    # just minecraft
+    (lib.mkIf cfg.minecraft.enable {
+      environment.systemPackages = with pkgs; [
+        prismlauncher
+      ]
+    })
+
+    # server for minecraft
+    (lib.mkIf cfg.minecraftserver.enable {
+
+      # Java for MC 1.20.1 (Forge uses Java 17)
+      environment.systemPackages = with pkgs; [
+        jdk17_headless
+        curl
+        wget
+        tmux
+        unzip
+        rsync
+      ];
+
+      # Dedicated service user
+      users.users.minecraft = {
+        isSystemUser = true;
+        group = "minecraft";
+        home = "/srv/minecraft";
+        createHome = true;
+      };
+      users.groups.minecraft = {};
+
+      # Create directories with correct permissions
+      systemd.tmpfiles.rules = [
+        "d /srv/minecraft 0750 minecraft minecraft - -"
+        "d /srv/minecraft/mods 0750 minecraft minecraft - -"
+        "d /srv/minecraft/world 0750 minecraft minecraft - -"
+        "d /srv/minecraft/logs 0750 minecraft minecraft - -"
+        "d /srv/minecraft/config 0750 minecraft minecraft - -"
+        # You will create /srv/minecraft/run.sh yourself (see below)
+      ];
+
+      # Firewall: open LAN port (set to false later if you only use a tunnel)
+      networking.firewall.allowedTCPPorts = [ 25565 ];
+
+      # Systemd service (expects a run.sh you control)
+      systemd.services.minecraft-forge = {
+        description = "Minecraft Forge Server";
+        after = [ "network-online.target" ];
+        wants = [ "network-online.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        serviceConfig = {
+          Type = "simple";
+          User = "minecraft";
+          Group = "minecraft";
+          WorkingDirectory = "/srv/minecraft";
+          Restart = "on-failure";
+          RestartSec = "5s";
+
+          # Hardening (reasonable defaults)
+          NoNewPrivileges = true;
+          PrivateTmp = true;
+          ProtectSystem = "strict";
+          ProtectHome = true;
+          ReadWritePaths = [ "/srv/minecraft" ];
+        };
+
+        # You control the server launch script; it can call Java with your chosen args
+        script = ''
+          set -euo pipefail
+          if [ ! -x /srv/minecraft/run.sh ]; then
+            echo "Missing /srv/minecraft/run.sh (executable)."
+            echo "Create it to launch Forge 1.20.1, then: systemctl restart minecraft-forge"
+            exit 1
+          fi
+          exec /srv/minecraft/run.sh
+        '';
+      };
+    })
+
   ];
 }
