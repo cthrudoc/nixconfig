@@ -289,7 +289,7 @@ in
     (lib.mkIf cfg.minecraft.enable {
       environment.systemPackages = with pkgs; [
         prismlauncher
-      ]
+      ];
     })
 
     # server for minecraft

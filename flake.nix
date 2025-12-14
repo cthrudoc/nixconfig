@@ -115,21 +115,45 @@
       nixosConfigurations.M720 = lib.nixosSystem {
         inherit system;
         modules = [
+          lanzaboote.nixosModules.lanzaboote # [TODO] no machine can start without lanzaboote, FIX [BUG]
           ./hosts/M720/hardware-configuration.nix
           ./modules/profiles.nix
+
 
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
             nixpkgs.config.allowUnfree = true;
 
-            networking.hostName = "M720";
+            boot.loader.systemd-boot.enable = true;
+            boot.loader.efi.canTouchEfiVariables = true;
+            boot.loader.grub.enable = false;
+
+            networking.hostName = "m720";
             time.timeZone = "Europe/Warsaw";
             networking.networkmanager.enable = true;
 
             profiles.base.enable = true;
             profiles.globalpython.enable = true;
             profiles.desktop.enable = true;
-            profiles.minecraftserver = true;
+            profiles.minecraftserver.enable = true;
+
+            services.openssh.enable = true; # [TODO] configure a proper SSH module
+            services.openssh.settings = {
+              PasswordAuthentication = true;   # disable later after keys
+              };
+
+            # remote desktop
+            services.xrdp.enable = true;
+            services.xrdp.defaultWindowManager = "startplasma-x11";
+            networking.firewall.allowedTCPPorts = [ 3389 22 ];
+            networking.firewall.allowedUDPPorts = [ 5353 ]; # for avahi
+
+            # avoiding IP's with remote desktop [TODO] add it to proper module
+            services.avahi = {
+              enable = true;
+              nssmdns = true;
+            };
+
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
