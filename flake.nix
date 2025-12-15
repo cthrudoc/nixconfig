@@ -137,12 +137,29 @@
             # profiles.desktop.enable = true;
             profiles.minecraftserver.enable = true;
 
+            # Service to start minecraft server
+            systemd.services.minecraft-forge = {
+              path = with pkgs; [ bash coreutils jdk21_headless ];
+              # (keep the rest of your existing service as-is)
+            };
 
+            # Service to start internet connection to minecraft server
+            systemd.services.playit = {
+              description = "playit.gg tunnel agent";
+              after = [ "network-online.target" ];
+              wants = [ "network-online.target" ];
+              wantedBy = [ "multi-user.target" ];
 
-systemd.services.minecraft-forge = {
-  path = with pkgs; [ bash coreutils jdk21_headless ];
-  # (keep the rest of your existing service as-is)
-};
+              serviceConfig = {
+                ExecStart = "/opt/playit/playit";
+                Restart = "always";
+                RestartSec = "5s";
+
+                # run as your normal user (fine)
+                User = "deltarnd";
+                WorkingDirectory = "/home/deltarnd";
+              };
+            };
 
 
             services.openssh.enable = true; # [TODO] configure a proper SSH module

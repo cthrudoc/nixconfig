@@ -288,8 +288,12 @@ in
     # just minecraft
     (lib.mkIf cfg.minecraft.enable {
       environment.systemPackages = with pkgs; [
-        prismlauncher
-      ];
+        (pkgs.writeShellScriptBin "prismlauncher" ''
+          export __GLX_VENDOR_LIBRARY_NAME=nvidia
+          exec ${pkgs.prismlauncher}/bin/prismlauncher "$@"
+        '')
+      ]; # fix so that prism doens't shit itself
+
     })
 
     # server for minecraft
@@ -335,7 +339,7 @@ in
         wantedBy = [ "multi-user.target" ];
 
 	path = with pkgs; [ bash coreutils jdk21_headless ];
-	
+
         serviceConfig = {
           Type = "simple";
           User = "minecraft";
