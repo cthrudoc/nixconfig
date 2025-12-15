@@ -297,7 +297,7 @@ in
 
       # Java for MC 1.20.1 (Forge uses Java 17)
       environment.systemPackages = with pkgs; [
-        jdk17_headless
+        jdk21_headless
         curl
         wget
         tmux
@@ -334,6 +334,8 @@ in
         wants = [ "network-online.target" ];
         wantedBy = [ "multi-user.target" ];
 
+	path = with pkgs; [ bash coreutils jdk21_headless ];
+	
         serviceConfig = {
           Type = "simple";
           User = "minecraft";
@@ -341,6 +343,8 @@ in
           WorkingDirectory = "/srv/minecraft";
           Restart = "on-failure";
           RestartSec = "5s";
+	  ExecStart = lib.mkForce "/srv/minecraft/run.sh";
+
 
           # Hardening (reasonable defaults)
           NoNewPrivileges = true;

@@ -134,8 +134,16 @@
 
             profiles.base.enable = true;
             profiles.globalpython.enable = true;
-            profiles.desktop.enable = true;
+            # profiles.desktop.enable = true;
             profiles.minecraftserver.enable = true;
+
+
+
+systemd.services.minecraft-forge = {
+  path = with pkgs; [ bash coreutils jdk21_headless ];
+  # (keep the rest of your existing service as-is)
+};
+
 
             services.openssh.enable = true; # [TODO] configure a proper SSH module
             services.openssh.settings = {
@@ -143,10 +151,24 @@
               };
 
             # remote desktop
+
+            environment.systemPackages = with pkgs; [
+              # xorg.xorgxrdp
+            ];
+
+            services.xserver.enable = true;
+
+            services.xserver.desktopManager.xfce.enable = true;
+            services.xserver.displayManager.lightdm.enable = true;
+
+            services.desktopManager.plasma6.enable = lib.mkForce false;
+            services.displayManager.sddm.enable = lib.mkForce false;
+            services.displayManager.sddm.wayland.enable = lib.mkForce false;
             services.xrdp.enable = true;
-            services.xrdp.defaultWindowManager = "startplasma-x11";
             networking.firewall.allowedTCPPorts = [ 3389 22 ];
             networking.firewall.allowedUDPPorts = [ 5353 ]; # for avahi
+
+            services.xrdp.defaultWindowManager = "${pkgs.xfce.xfce4-session}/bin/startxfce4";
 
             # avoiding IP's with remote desktop [TODO] add it to proper module
             services.avahi = {
