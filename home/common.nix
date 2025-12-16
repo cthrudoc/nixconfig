@@ -57,34 +57,40 @@
         ])
         ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
           # {
-          # publisher = "vintharas";
-          # name = "learn-vim";
-          # version = "0.0.28";
-          # sha256 = "sha256-HAEKetNHUZ1HopGeQTqkrGUWZNFWD7gMaoTNbpxqI1Y=";
+            # publisher = "vintharas";
+            # name = "learn-vim";
+            # version = "0.0.28";
+            # sha256 = "sha256-HAEKetNHUZ1HopGeQTqkrGUWZNFWD7gMaoTNbpxqI1Y=";
           # }
           # {
-          # publisher = "enkia";
-          # name = "tokyo-night";
-          # version = "1.1.2";
-          # sha256 = "sha256-oW0bkLKimpcjzxTb/yjShagjyVTUFEg198oPbY5J2hM=";
+            # publisher = "enkia";
+            # name = "tokyo-night";
+            # version = "1.1.2";
+            # sha256 = "sha256-oW0bkLKimpcjzxTb/yjShagjyVTUFEg198oPbY5J2hM=";
           # }
           {
-          publisher = "samuelcolvin";
-          name = "jinjahtml";
-          version = "0.20.0";
-          sha256 = "sha256-wADL3AkLfT2N9io8h6XYgceKyltJCz5ZHZhB14ipqpM=";
+            publisher = "samuelcolvin";
+            name = "jinjahtml";
+            version = "0.20.0";
+            sha256 = "sha256-wADL3AkLfT2N9io8h6XYgceKyltJCz5ZHZhB14ipqpM=";
           }
           {
-          publisher = "jnoortheen";
-          name = "nix-ide";
-          version = "0.5.0";
-          sha256 = "sha256-jVuGQzMspbMojYq+af5fmuiaS3l3moG8L8Kyf40vots=";
+            publisher = "jnoortheen";
+            name = "nix-ide";
+            version = "0.5.0";
+            sha256 = "sha256-jVuGQzMspbMojYq+af5fmuiaS3l3moG8L8Kyf40vots=";
           }
           {
-          publisher = "slhsxcmy";
-          name = "vscode-double-line-numbers";
-          version = "0.1.4";
-          sha256 = "sha256-07Iiq8s6+8o7LfpcTCvwAyleBMnjEiRzV9BASoAig4A=";
+            publisher = "slhsxcmy";
+            name = "vscode-double-line-numbers";
+            version = "0.1.4";
+            sha256 = "sha256-07Iiq8s6+8o7LfpcTCvwAyleBMnjEiRzV9BASoAig4A=";
+          }
+          {
+            publisher = "openai";
+            name = "chatgpt";
+            version = "0.4.51";
+            sha256 = "sha256-aYjiHTffYxH1+59xklp29oNh/qv5vVs3VS5yZYj2M4c=";
           }
         ];
 
