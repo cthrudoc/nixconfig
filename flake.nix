@@ -137,6 +137,12 @@
             # profiles.desktop.enable = true;
             profiles.minecraftserver.enable = true;
 
+            # Tailscale for remote SSH
+            services.tailscale = {
+              enable = true;
+              useRoutingFeatures = "client";
+            };
+
             # Service to start minecraft server
             systemd.services.minecraft-forge = {
               path = with pkgs; [ bash coreutils jdk21_headless ];
@@ -155,7 +161,6 @@
                 Restart = "always";
                 RestartSec = "5s";
 
-                # run as your normal user (fine)
                 User = "deltarnd";
                 WorkingDirectory = "/home/deltarnd";
               };
