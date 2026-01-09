@@ -82,6 +82,8 @@ in
 
     # Desktop (GUI + audio)
     (lib.mkIf cfg.desktop.enable {
+      services.xserver.videoDrivers = [ "amdgpu" ];
+
       services.displayManager.sddm.enable = true;
       services.desktopManager.plasma6.enable = true;
       services.xserver.enable = true;
@@ -204,6 +206,7 @@ in
         kdePackages.kfind
         kdePackages.kcolorchooser
         kdePackages.kmag
+        vlc # [TODO] move from here
         ];
 
         # needs to be enabled for kdeconnect to work
@@ -283,17 +286,6 @@ in
         unstable.starsector
         prismlauncher
       ];
-    })
-
-    # just minecraft
-    (lib.mkIf cfg.minecraft.enable {
-      environment.systemPackages = with pkgs; [
-        (pkgs.writeShellScriptBin "prismlauncher" ''
-          export __GLX_VENDOR_LIBRARY_NAME=nvidia
-          exec ${pkgs.prismlauncher}/bin/prismlauncher "$@"
-        '')
-      ]; # fix so that prism doens't shit itself
-
     })
 
     # server for minecraft

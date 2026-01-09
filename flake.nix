@@ -59,7 +59,7 @@
             profiles.VNC.enable = true;
             profiles.core.enable = true;
             profiles.gaming.enable = true;
-            profiles.nvidia.enable = true;
+            profiles.nvidia.enable = false;
             profiles.kdeapps.enable = true;
             profiles.globalpython.enable = true;
             profiles.secureboot.enable = true;
