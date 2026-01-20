@@ -238,6 +238,10 @@ in
         zlib
         glibc
       ];
+      # [TODO] TEMPORARY !!!! virtualisation
+      virtualisation.podman.enable = true;
+      virtualisation.containers.enable = true;
+
     }
     )
 
