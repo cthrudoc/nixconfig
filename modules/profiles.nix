@@ -20,6 +20,7 @@ in
     starsector.enable = lib.mkEnableOption "starsector";
     minecraft.enable = lib.mkEnableOption "minecraft";
     minecraftserver.enable = lib.mkEnableOption "minecraftserver";
+    containers.enable = lib.mkEnableOption "Podman + /etc/containers config (policy/registries) + OCI systemd backend";
   };
 
   config = lib.mkMerge [
@@ -345,8 +346,7 @@ in
           RestartSec = "5s";
 	  ExecStart = lib.mkForce "/srv/minecraft/run.sh";
 
-
-          # Hardening (reasonable defaults)
+          # Hardening
           NoNewPrivileges = true;
           PrivateTmp = true;
           ProtectSystem = "strict";
@@ -354,7 +354,7 @@ in
           ReadWritePaths = [ "/srv/minecraft" ];
         };
 
-        # You control the server launch script; it can call Java with your chosen args
+        # control of the server launch script; it can call Java with chosen args
         script = ''
           set -euo pipefail
           if [ ! -x /srv/minecraft/run.sh ]; then
@@ -366,6 +366,55 @@ in
         '';
       };
     })
+
+    # containers
+    (lib.mkIf cfg.containers.enable {
+
+      # Generate /etc/containers/* (policy.json, registries.conf, storage.conf, …)
+      virtualisation.containers = {
+        enable = true;
+
+        # image search
+        registries.search = [ "docker.io" "quay.io" "registry.gitlab.com" ];
+
+        # Strict by default, allow unsigned pulls only from specific registries
+        policy = {
+          default = [{ type = "reject"; }];
+          transports = {
+            docker = {
+              "docker.io" = [{ type = "insecureAcceptAnything"; }];
+              "quay.io" = [{ type = "insecureAcceptAnything"; }];
+              "registry.gitlab.com" = [{ type = "insecureAcceptAnything"; }];
+            };
+          };
+        };
+      };
+
+      virtualisation.podman = {
+        enable = true;
+        dockerCompat = true;
+
+        # Important for container-to-container DNS with netavark/aardvark
+        defaultNetwork.settings.dns_enabled = true;
+      };
+
+      # run services via systemd
+      virtualisation.oci-containers.backend = "podman";
+
+      # some tooling
+      environment.systemPackages = with pkgs; [
+        skopeo
+        podman-compose
+      ];
+
+      # Rootless mappings
+      users.users.deltarnd = {
+        extraGroups = lib.mkAfter [ "podman" ];
+        subUidRanges = [{ startUid = 100000; count = 65536; }];
+        subGidRanges = [{ startGid = 100000; count = 65536; }];
+      };
+    })
+
 
   ];
 }

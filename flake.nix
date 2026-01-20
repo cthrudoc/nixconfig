@@ -66,6 +66,7 @@
             profiles.netsec.enable = true;
             profiles.starsector.enable = true;
             profiles.minecraft.enable = true;
+            profiles.containers.enable = true;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -136,6 +137,7 @@
             profiles.globalpython.enable = true;
             # profiles.desktop.enable = true;
             profiles.minecraftserver.enable = true;
+            profiles.containers.enable = true;
 
             # Tailscale for remote SSH
             services.tailscale = {
