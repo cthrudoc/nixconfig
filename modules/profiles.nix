@@ -239,9 +239,6 @@ in
         zlib
         glibc
       ];
-      # [TODO] TEMPORARY !!!! virtualisation
-      virtualisation.podman.enable = true;
-      virtualisation.containers.enable = true;
 
     }
     )
@@ -393,8 +390,6 @@ in
       virtualisation.podman = {
         enable = true;
         dockerCompat = true;
-
-        # Important for container-to-container DNS with netavark/aardvark
         defaultNetwork.settings.dns_enabled = true;
       };
 
@@ -405,6 +400,14 @@ in
       environment.systemPackages = with pkgs; [
         skopeo
         podman-compose
+        conmon
+        crun
+        slirp4netns
+        netavark
+        aardvark-dns
+        fuse-overlayfs
+        iptables
+        iproute2
       ];
 
       # Rootless mappings
