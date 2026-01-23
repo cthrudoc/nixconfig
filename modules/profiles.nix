@@ -410,13 +410,6 @@ in
         iptables
         iproute2
       ];
-
-      # Rootless mappings
-      users.users.deltarnd = {
-        extraGroups = lib.mkAfter [ "podman" ];
-        subUidRanges = [{ startUid = 100000; count = 65536; }];
-        subGidRanges = [{ startGid = 100000; count = 65536; }];
-      };
     })
 
 
@@ -467,13 +460,6 @@ in
       # Rootless podman prerequisites
       security.unprivilegedUsernsClone = true;
 
-      # Extend the gitlab-runner system user created by the module.
-      users.users.gitlab-runner = {
-        extraGroups = lib.mkAfter [ "podman" ];
-        subUidRanges = [{ startUid = 210000; count = 65536; }];
-        subGidRanges = [{ startGid = 210000; count = 65536; }];
-      };
-
       # Basic reliability / control
       systemd.services.gitlab-runner.serviceConfig = {
         Restart = "always";
@@ -481,6 +467,27 @@ in
         MemoryMax = "4G";
         CPUQuota = "200%";
       };
+
+      ## User setup :
+      # Ensure the gitlab-runner user is fully defined (required by NixOS assertions)
+      users.groups.gitlab-runner = {};
+
+      users.users.gitlab-runner = {
+        isSystemUser = true;
+        group = "gitlab-runner";
+
+        # allow rootless podman
+        extraGroups = lib.mkAfter [ "podman" ];
+
+        # rootless mappings
+        subUidRanges = [{ startUid = 210000; count = 65536; }];
+        subGidRanges = [{ startGid = 210000; count = 65536; }];
+
+        # optional but good hygiene
+        home = "/var/lib/gitlab-runner";
+        createHome = true;
+      };
+
 
     })
 
