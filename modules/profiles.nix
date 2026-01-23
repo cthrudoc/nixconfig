@@ -450,6 +450,7 @@ in
         gawk
         which
         shadow
+        python312
       ];
 
       # Ensures gitlab-runner service sees these tools in PATH (avoid “git not found” in CI).
@@ -488,6 +489,19 @@ in
         createHome = true;
       };
 
+      ## sops-nix config
+      # sops-nix: materialize the runner token env file at runtime (tmpfs), not in /nix/store
+      sops = {
+        age.keyFile = "/var/lib/sops-nix/key.txt";
+        defaultSopsFile = ../secrets/secrets.yaml;
+
+        secrets."gitlab-runner-ecg-shell-token-env" = {
+          owner = "gitlab-runner";
+          group = "gitlab-runner";
+          mode = "0400";
+          path = "/run/secrets/gitlab-runner-ecg-shell-token-env";
+        };
+      };
 
     })
 

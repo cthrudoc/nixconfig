@@ -35,6 +35,7 @@
           lanzaboote.nixosModules.lanzaboote
           ./hosts/BXR/hardware-configuration.nix
           ./modules/profiles.nix
+          sops-nix.nixosModules.sops # secrets management
 
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -90,6 +91,7 @@
         modules = [
           ./hosts/USB/hardware-configuration.nix
           ./modules/profiles.nix
+          sops-nix.nixosModules.sops # secrets management
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
             nixpkgs.config.allowUnfree = true;
@@ -124,7 +126,7 @@
           lanzaboote.nixosModules.lanzaboote # [TODO] no machine can start without lanzaboote, FIX [BUG]
           ./hosts/M720/hardware-configuration.nix
           ./modules/profiles.nix
-          sops-nix.nixosModules.sops # secrets management [TODO] is this the place for this?
+          sops-nix.nixosModules.sops # secrets management
 
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
