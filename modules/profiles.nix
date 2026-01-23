@@ -21,6 +21,7 @@ in
     minecraft.enable = lib.mkEnableOption "minecraft";
     minecraftserver.enable = lib.mkEnableOption "minecraftserver";
     containers.enable = lib.mkEnableOption "Podman + /etc/containers config (policy/registries) + OCI systemd backend";
+    gitlabrunner.enable = lib.mkEnableOption "gitlab runner, for now set up for running the EKG app, using podman, shell executor on host (gitlab is atm on Pi [TODO])";
   };
 
   config = lib.mkMerge [
@@ -372,7 +373,7 @@ in
         enable = true;
 
         # image search
-        registries.search = [ "docker.io" "quay.io" "registry.gitlab.com" ];
+        registries.search = [ "docker.io" "quay.io" "registry.dltrnd.com" ];
 
         # Strict by default, allow unsigned pulls only from specific registries
         policy = {
@@ -416,6 +417,71 @@ in
         subUidRanges = [{ startUid = 100000; count = 65536; }];
         subGidRanges = [{ startGid = 100000; count = 65536; }];
       };
+    })
+
+
+    # gitlab runner
+    (lib.mkIf cfg.gitlabrunner.enable {
+
+      # GitLab Runner service
+      services.gitlab-runner = {
+        enable = true;
+        concurrent = 1;
+
+        services.ecg-shell = {
+          executor = "shell";
+
+          # IMPORTANT: absolute string path so it is NOT copied into /nix/store.
+          # [TODO] This file will be created by sops-nix in the next step.
+          # [TODO] It must contain:
+          #   CI_SERVER_URL=https://git.dltrnd.com
+          #   CI_SERVER_TOKEN=glrt-...
+          authenticationTokenConfigFile = "/run/secrets/gitlab-runner-ecg-shell-token-env";
+
+          # Must match tags set in GitLab runner UI AND tags used in .gitlab-ci.yml jobs.
+          tagList = [ "shell" "x86_64" "ecg" ];
+        };
+      };
+
+      # Shell executor runs directly on host.
+      # Makes sure required tools exist system-wide (including git).
+      environment.systemPackages = with pkgs; [
+        git
+        podman
+        skopeo
+        bash
+        coreutils
+        findutils
+        gnugrep
+        gnused
+        gawk
+        which
+        shadow
+      ];
+
+      # Ensures gitlab-runner service sees these tools in PATH (avoid “git not found” in CI).
+      systemd.services.gitlab-runner.path = with pkgs; [
+        git podman skopeo bash coreutils findutils gnugrep gnused gawk which shadow
+      ];
+
+      # Rootless podman prerequisites
+      security.unprivilegedUsernsClone = true;
+
+      # Extend the gitlab-runner system user created by the module.
+      users.users.gitlab-runner = {
+        extraGroups = lib.mkAfter [ "podman" ];
+        subUidRanges = [{ startUid = 210000; count = 65536; }];
+        subGidRanges = [{ startGid = 210000; count = 65536; }];
+      };
+
+      # Basic reliability / control
+      systemd.services.gitlab-runner.serviceConfig = {
+        Restart = "always";
+        RestartSec = "5s";
+        MemoryMax = "4G";
+        CPUQuota = "200%";
+      };
+
     })
 
 
