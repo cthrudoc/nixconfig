@@ -9,9 +9,14 @@
     lanzaboote.url = "github:nix-community/lanzaboote";
     plasma-manager.url = "github:nix-community/plasma-manager";
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+};
+
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, lanzaboote, plasma-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, lanzaboote, plasma-manager, sops-nix, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
@@ -119,7 +124,7 @@
           lanzaboote.nixosModules.lanzaboote # [TODO] no machine can start without lanzaboote, FIX [BUG]
           ./hosts/M720/hardware-configuration.nix
           ./modules/profiles.nix
-
+          sops-nix.nixosModules.sops # secrets management [TODO] is this the place for this?
 
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -138,6 +143,7 @@
             # profiles.desktop.enable = true;
             profiles.minecraftserver.enable = true;
             profiles.containers.enable = true;
+            profiles.gitlabrunner.enable= true;
 
             # Tailscale for remote SSH
             services.tailscale = {
