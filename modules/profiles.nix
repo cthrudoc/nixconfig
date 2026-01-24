@@ -462,6 +462,12 @@ in
       systemd.services.gitlab-runner.serviceConfig.NoNewPrivileges = lib.mkForce false;
       systemd.services.gitlab-runner.serviceConfig.RestrictSUIDSGID  = lib.mkForce false;
 
+      # GitLab Runner must be a *stable* system user for rootless podman (subuid/subgid)
+      systemd.services.gitlab-runner.serviceConfig.DynamicUser = lib.mkForce false;
+      systemd.services.gitlab-runner.serviceConfig.User = lib.mkForce "gitlab-runner";
+      systemd.services.gitlab-runner.serviceConfig.Group = lib.mkForce "gitlab-runner";
+
+
       # Basic reliability / control
       systemd.services.gitlab-runner.serviceConfig = {
         Restart = "always";
