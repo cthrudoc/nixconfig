@@ -563,7 +563,7 @@ in
 
         containers = {
           ecg-staging = {
-            image = "registry.dltrnd.com/https://git.dltrnd.com/team-code-blue/EKG_Interface:staging";
+            image = "registry.dltrnd.com/team-code-blue/ekg_interface:staging";
             autoStart = true;
 
             ports = [ "127.0.0.1:8001:8000" ];
@@ -581,7 +581,7 @@ in
           };
 
           ecg-prod = {
-            image = "registry.dltrnd.com/https://git.dltrnd.com/team-code-blue/EKG_Interface:prod";
+            image = "registry.dltrnd.com/team-code-blue/ekg_interface:prod";
             autoStart = true;
 
             ports = [ "127.0.0.1:8002:8000" ];
