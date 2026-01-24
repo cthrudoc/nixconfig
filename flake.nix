@@ -145,7 +145,8 @@
             # profiles.desktop.enable = true;
             profiles.minecraftserver.enable = true;
             profiles.containers.enable = true;
-            profiles.gitlabrunner.enable= true;
+            profiles.gitlabrunner.enable = true;
+            profiles.ecg-interface.enable = true;
 
             # Tailscale for remote SSH
             services.tailscale = {

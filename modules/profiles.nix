@@ -22,6 +22,7 @@ in
     minecraftserver.enable = lib.mkEnableOption "minecraftserver";
     containers.enable = lib.mkEnableOption "Podman + /etc/containers config (policy/registries) + OCI systemd backend";
     gitlabrunner.enable = lib.mkEnableOption "gitlab runner, for now set up for running the EKG app, using podman, shell executor on host (gitlab is atm on Pi [TODO])";
+    ecg-interface.enable = lib.mkEnableOption "Deployment for ECG Interface"
   };
 
   config = lib.mkMerge [
@@ -520,10 +521,46 @@ in
         };
       };
 
-
-
     })
 
+    # module for deploying ECG Interface app to gitlab
+    (lib.mkIf cfg.ecg-interface.enable {
+      systemd.tmpfiles.rules = [
+        # persistent data (SQLite + secret_key files mounted/copied here)
+        "d /var/lib/ecg-interface 0750 root root - -"
+        "d /var/lib/ecg-interface/prod 0750 root root - -"
+        "d /var/lib/ecg-interface/staging 0750 root root - -"
+
+        # backups
+        "d /var/backups/ecg-interface 0750 root root - -"
+        "d /var/backups/ecg-interface/prod 0750 root root - -"
+        "d /var/backups/ecg-interface/staging 0750 root root - -"
+      ];
+
+      # Ensure root podman can pull from registry.dltrnd.com
+      systemd.tmpfiles.rules = [
+        "d /root/.config 0700 root root - -"
+        "d /root/.config/containers 0700 root root - -"
+      ];
+
+      sops.secrets."containers-auth.json" = {
+        owner = "root";
+        group = "root";
+        mode  = "0400";
+        path  = "/root/.config/containers/auth.json";
+      };
+
+      sops.secrets."ecg-staging-secret_key" = {
+        owner = "root"; group = "root"; mode = "0400";
+        path = "/run/secrets/ecg-staging-secret_key";
+      };
+
+      sops.secrets."ecg-prod-secret_key" = {
+        owner = "root"; group = "root"; mode = "0400";
+        path = "/run/secrets/ecg-prod-secret_key";
+      };
+
+    })
 
   ];
 }
