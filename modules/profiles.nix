@@ -467,6 +467,7 @@ in
         RestartSec = "5s";
         MemoryMax = "4G";
         CPUQuota = "200%";
+        NoNewPrivileges = lib.mkForce false;
       };
 
       ## User setup :
@@ -502,6 +503,8 @@ in
           path = "/run/secrets/gitlab-runner-ecg-shell-token-env";
         };
       };
+
+
 
     })
 
