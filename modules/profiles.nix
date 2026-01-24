@@ -467,6 +467,12 @@ in
       systemd.services.gitlab-runner.serviceConfig.User = lib.mkForce "gitlab-runner";
       systemd.services.gitlab-runner.serviceConfig.Group = lib.mkForce "gitlab-runner";
 
+      # Rootless podman in CI must not require systemd user session / polkit
+      environment.etc."containers/containers.conf".text = ''
+      [engine]
+      cgroup_manager="cgroupfs"
+      events_logger="file"
+      '';
 
       # Basic reliability / control
       systemd.services.gitlab-runner.serviceConfig = {
