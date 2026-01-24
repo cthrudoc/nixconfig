@@ -1,0 +1,9 @@
+keys:
+  - &m720 age16wjns0ajudzegdj8xn6vpqzmc29kgcw3dzyy2gsee6mxaqhw232qnyr45a 
+
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age:
+          - *m720
+
