@@ -556,6 +556,52 @@ in
         path = "/run/secrets/ecg-prod-secret_key";
       };
 
+      ## Containers for staging and prod :
+
+      virtualisation.oci-containers = {
+        backend = "podman";
+
+        containers = {
+          ecg-staging = {
+            image = "registry.dltrnd.com/https://git.dltrnd.com/team-code-blue/EKG_Interface:staging";
+            autoStart = true;
+
+            ports = [ "127.0.0.1:8001:8000" ];
+
+            volumes = [
+              "/var/lib/ecg-interface/staging:/data:Z"
+              "/run/secrets/ecg-staging-secret_key:/data/secret_key:ro,Z"
+            ];
+
+            environment = {
+              DATABASE_URL = "sqlite:////data/app.db";
+              SECRET_KEY_FILE = "/data/secret_key";
+              FLASK_ENV = "production";
+            };
+          };
+
+          ecg-prod = {
+            image = "registry.dltrnd.com/https://git.dltrnd.com/team-code-blue/EKG_Interface:prod";
+            autoStart = true;
+
+            ports = [ "127.0.0.1:8002:8000" ];
+
+            volumes = [
+              "/var/lib/ecg-interface/prod:/data:Z"
+              "/run/secrets/ecg-prod-secret_key:/data/secret_key:ro,Z"
+            ];
+
+            environment = {
+              DATABASE_URL = "sqlite:////data/app.db";
+              SECRET_KEY_FILE = "/data/secret_key";
+              FLASK_ENV = "production";
+            };
+          };
+        };
+      };
+
+
+
     })
 
   ];
