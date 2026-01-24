@@ -345,7 +345,6 @@ in
 	  ExecStart = lib.mkForce "/srv/minecraft/run.sh";
 
           # Hardening
-          NoNewPrivileges = true;
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
@@ -460,6 +459,8 @@ in
 
       # Rootless podman prerequisites
       security.unprivilegedUsernsClone = true;
+      systemd.services.gitlab-runner.serviceConfig.NoNewPrivileges = lib.mkForce false;
+      systemd.services.gitlab-runner.serviceConfig.RestrictSUIDSGID  = lib.mkForce false;
 
       # Basic reliability / control
       systemd.services.gitlab-runner.serviceConfig = {
@@ -467,7 +468,6 @@ in
         RestartSec = "5s";
         MemoryMax = "4G";
         CPUQuota = "200%";
-        NoNewPrivileges = lib.mkForce false;
       };
 
       ## User setup :
