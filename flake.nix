@@ -147,6 +147,7 @@
             profiles.containers.enable = true;
             profiles.gitlabrunner.enable = true;
             profiles.ecg-interface.enable = true;
+            profiles.cloudflared.enable = true;
 
             # Tailscale for remote SSH
             services.tailscale = {
