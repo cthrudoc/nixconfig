@@ -373,7 +373,7 @@ in
         enable = true;
 
         # image search
-        registries.search = [ "docker.io" "quay.io" "registry.dltrnd.com" ];
+        registries.search = [ "docker.io" "quay.io" "registry.dltrnd.com" "registry.gitlab.com"];
 
         # Strict by default, allow unsigned pulls only from specific registries
         policy = {
@@ -383,6 +383,7 @@ in
               "docker.io" = [{ type = "insecureAcceptAnything"; }];
               "quay.io" = [{ type = "insecureAcceptAnything"; }];
               "registry.gitlab.com" = [{ type = "insecureAcceptAnything"; }];
+              "registry.dltrnd.com" = [{ type = "insecureAcceptAnything"; }];
             };
           };
         };
