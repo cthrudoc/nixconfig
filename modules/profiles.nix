@@ -548,12 +548,12 @@ in
       };
 
       sops.secrets."ecg-staging-secret_key" = {
-        owner = "root"; group = "root"; mode = "0440";
+        owner = "root"; group = "root"; mode = "0444";
         path = "/run/secrets/ecg-staging-secret_key";
       };
 
       sops.secrets."ecg-prod-secret_key" = {
-        owner = "root"; group = "root"; mode = "0440";
+        owner = "root"; group = "root"; mode = "0444";
         path = "/run/secrets/ecg-prod-secret_key";
       };
 
