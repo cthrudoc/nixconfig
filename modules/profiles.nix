@@ -23,6 +23,7 @@ in
     containers.enable = lib.mkEnableOption "Podman + /etc/containers config (policy/registries) + OCI systemd backend";
     gitlabrunner.enable = lib.mkEnableOption "gitlab runner, for now set up for running the EKG app, using podman, shell executor on host (gitlab is atm on Pi [TODO])";
     ecg-interface.enable = lib.mkEnableOption "Deployment for ECG Interface";
+    cloudflared.enable = lib.mkEnableOption "Cloudflared";
   };
 
   config = lib.mkMerge [
@@ -644,6 +645,44 @@ in
       };
 
 
+
+    })
+
+    (lib.mkIf cfg.cloudflared.enable { # [TODO] this is configured to ECG app only, make it universal
+
+      users.groups.cloudflared = {};
+      users.users.cloudflared = {
+        isSystemUser = true;
+        group = "cloudflared";
+      };
+
+      environment.systemPackages = with pkgs; [ cloudflared ];
+
+      sops.secrets."cloudflared-ecg-token-env" = {
+        owner = "cloudflared";
+        group = "cloudflared";
+        mode  = "0400";
+        path  = "/run/secrets/cloudflared-ecg-token-env";
+      };
+
+      systemd.services.cloudflared-ecg = {
+        description = "Cloudflare Tunnel (ECG)";
+        after = [ "network-online.target" "nginx.service" ];
+        wants = [ "network-online.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        serviceConfig = {
+          Type = "simple";
+          User = "cloudflared";
+          Group = "cloudflared";
+
+          EnvironmentFile = "/run/secrets/cloudflared-ecg-token-env";
+          ExecStart = "${pkgs.cloudflared}/bin/cloudflared tunnel --no-autoupdate run --token $TUNNEL_TOKEN";
+
+          Restart = "always";
+          RestartSec = "5s";
+        };
+      };
 
     })
 
