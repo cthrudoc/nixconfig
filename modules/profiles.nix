@@ -605,6 +605,44 @@ in
         };
       };
 
+      # nginx [TODO] split general nginx into it's own module
+      services.nginx = {
+        enable = true;
+
+        # good defaults for proxying (headers, buffering, etc.)
+        recommendedProxySettings = true;
+        recommendedGzipSettings = true;
+
+        virtualHosts = {
+          "ekg.dltrnd.com" = {
+            # listen only on loopback (not LAN)
+            listen = [ { addr = "127.0.0.1"; port = 8088; } ];
+
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:8002";
+              extraConfig = ''
+                proxy_read_timeout 300s;
+                proxy_connect_timeout 10s;
+                proxy_send_timeout 300s;
+              '';
+            };
+          };
+
+          "staging-ekg.dltrnd.com" = {
+            listen = [ { addr = "127.0.0.1"; port = 8088; } ];
+
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:8001";
+              extraConfig = ''
+                proxy_read_timeout 300s;
+                proxy_connect_timeout 10s;
+                proxy_send_timeout 300s;
+              '';
+            };
+          };
+        };
+      };
+
 
 
     })
