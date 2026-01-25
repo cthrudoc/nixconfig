@@ -569,6 +569,8 @@ in
 
             ports = [ "127.0.0.1:8001:8000" ];
 
+            user = "0;0";
+
             volumes = [
               "/var/lib/ecg-interface/staging:/data:Z"
               "/run/secrets/ecg-staging-secret_key:/data/secret_key:ro,Z"
@@ -586,6 +588,8 @@ in
             autoStart = true;
 
             ports = [ "127.0.0.1:8002:8000" ];
+
+            user = "0;0";
 
             volumes = [
               "/var/lib/ecg-interface/prod:/data:Z"
