@@ -643,6 +643,88 @@ in
           };
         };
       };
+      # Ensure sqlite3 exists for the backup jobs (host-side)
+      # (alternatively you can put it only in the systemd service path below)
+      environment.systemPackages = lib.mkAfter (with pkgs; [ sqlite ]);
+
+      # ---- PROD backup ----
+      systemd.services.ecg-backup-prod = {
+        description = "ECG prod SQLite backup (.backup + rotation)";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "root";
+          Group = "root";
+        };
+        path = with pkgs; [ bash coreutils findutils gnugrep gawk sqlite ];
+        script = ''
+          set -euo pipefail
+
+          DB="/var/lib/ecg-interface/prod/app.db"
+          OUTDIR="/var/backups/ecg-interface/prod"
+          KEEP=60
+
+          test -f "$DB"
+
+          ts="$(date -u +%Y%m%d-%H%M%S)"
+          out="$OUTDIR/app-$ts.db"
+
+          # Online-safe SQLite backup (works fine with WAL)
+          sqlite3 "$DB" ".backup '$out'"
+
+          # Keep only newest $KEEP backups
+          cd "$OUTDIR"
+          ls -1t app-*.db | tail -n +$((KEEP+1)) | xargs -r rm -f --
+        '';
+      };
+
+      systemd.timers.ecg-backup-prod = {
+        description = "Run ECG prod backup every 6 hours";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          # 00:05 / 06:05 / 12:05 / 18:05
+          OnCalendar = "*-*-* 00,06,12,18:05:00";
+          Persistent = true;
+          RandomizedDelaySec = "10m";
+        };
+      };
+
+      # ---- STAGING backup ----
+      systemd.services.ecg-backup-staging = {
+        description = "ECG staging SQLite backup (.backup + rotation)";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "root";
+          Group = "root";
+        };
+        path = with pkgs; [ bash coreutils findutils gnugrep gawk sqlite ];
+        script = ''
+          set -euo pipefail
+
+          DB="/var/lib/ecg-interface/staging/app.db"
+          OUTDIR="/var/backups/ecg-interface/staging"
+          KEEP=30
+
+          test -f "$DB"
+
+          ts="$(date -u +%Y%m%d-%H%M%S)"
+          out="$OUTDIR/app-$ts.db"
+
+          sqlite3 "$DB" ".backup '$out'"
+
+          cd "$OUTDIR"
+          ls -1t app-*.db | tail -n +$((KEEP+1)) | xargs -r rm -f --
+        '';
+      };
+
+      systemd.timers.ecg-backup-staging = {
+        description = "Run ECG staging backup daily";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "daily";
+          Persistent = true;
+          RandomizedDelaySec = "10m";
+        };
+      };
 
 
 
