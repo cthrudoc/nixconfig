@@ -726,6 +726,55 @@ in
         };
       };
 
+      # sytemd health monitor
+      systemd.services.ecg-healthcheck-prod = {
+        description = "ECG prod healthcheck (restart on repeated failure)";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "root";
+          Group = "root";
+        };
+        path = with pkgs; [ curl coreutils bash systemd ];
+        script = ''
+          set -euo pipefail
+
+          URL="http://127.0.0.1:8080/health"
+          HOST="ekg.dltrnd.com"
+          STATE="/run/ecg-health-prod.failcount"
+
+          failcount=0
+          if [ -f "$STATE" ]; then
+            failcount="$(cat "$STATE" || echo 0)"
+          fi
+
+          if curl -fsS -H "Host: $HOST" "$URL" >/dev/null; then
+            echo 0 > "$STATE"
+            exit 0
+          fi
+
+          failcount=$((failcount + 1))
+          echo "$failcount" > "$STATE"
+
+          if [ "$failcount" -ge 3 ]; then
+            echo 0 > "$STATE"
+            systemctl restart podman-ecg-prod.service
+            echo "Healthcheck failed 3x; restarted podman-ecg-prod" >&2
+          else
+            echo "Healthcheck failed ($failcount/3)" >&2
+          fi
+        '';
+      };
+
+      systemd.timers.ecg-healthcheck-prod = {
+        description = "Run ECG prod healthcheck every minute";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnBootSec = "1m";
+          OnUnitActiveSec = "1m";
+          Persistent = true;
+        };
+      };
+
 
 
     })
