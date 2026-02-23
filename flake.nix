@@ -12,11 +12,12 @@
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 };
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, lanzaboote, plasma-manager, sops-nix, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, lanzaboote, plasma-manager, sops-nix, nixos-hardware, ... }:
     let
       system = "x86_64-linux";
       lib = nixpkgs.lib;
@@ -82,6 +83,57 @@
             home-manager.users.deltarnd = import ./home/common.nix;
 
             system.stateVersion = "25.05"; # don't touch, ever
+          }
+        ];
+      };
+      
+      nixosConfigurations.GO3 = lib.nixosSystem {
+        inherit system;
+        specialArgs = {
+          inherit unstable;
+        };
+        modules = [
+          # Surface Go hardware quirks + linux-surface stack
+          nixos-hardware.nixosModules.microsoft-surface-go
+      
+          ./hosts/GO3/hardware-configuration.nix
+          ./modules/profiles.nix
+          sops-nix.nixosModules.sops
+      
+          home-manager.nixosModules.home-manager {
+            nix.settings.experimental-features = [ "nix-command" "flakes" ];
+            nixpkgs.config.allowUnfree = true;
+      
+            networking.hostName = "go3";
+            time.timeZone = "Europe/Warsaw";
+            networking.networkmanager.enable = true;
+      
+            # [TODO] desktop profile forces amdgpu; override for Surface (Intel)
+            services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
+      
+            profiles.base.enable = true;
+            profiles.desktop.enable = true;
+            profiles.bluetooth.enable = true;
+            profiles.core.enable = true;
+            profiles.globalpython.enable = true;
+      
+            # Do NOT enable secureboot/lanzaboote on this host for now
+            profiles.secureboot.enable = false;
+      
+            # [TODO] Tailscale. Make it into a module. 
+            services.tailscale = {
+              enable = true;
+              useRoutingFeatures = "client";
+            };
+      
+            services.openssh.enable = true;
+      
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { pm = plasma-manager; };
+            home-manager.users.deltarnd = import ./home/common.nix;
+      
+            system.stateVersion = "25.05";
           }
         ];
       };
