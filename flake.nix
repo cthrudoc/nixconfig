@@ -11,9 +11,9 @@
     plasma-manager.inputs.nixpkgs.follows = "nixpkgs";
     sops-nix = {
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";};
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-};
+
 
   };
 
@@ -95,6 +95,7 @@
         modules = [
           # Surface Go hardware quirks + linux-surface stack
           nixos-hardware.nixosModules.microsoft-surface-go
+          lanzaboote.nixosModules.lanzaboote # [TODO] now nothing boots without lanzaboote. turn it into a proper module!
       
           ./hosts/GO3/hardware-configuration.nix
           ./modules/profiles.nix
@@ -107,6 +108,7 @@
             networking.hostName = "go3";
             time.timeZone = "Europe/Warsaw";
             networking.networkmanager.enable = true;
+            hardware.microsoft-surface.kernelVersion = "stable"; # surface kernel needs stable
       
             # [TODO] desktop profile forces amdgpu; override for Surface (Intel)
             services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
@@ -116,6 +118,15 @@
             profiles.bluetooth.enable = true;
             profiles.core.enable = true;
             profiles.globalpython.enable = true;
+
+            profiles.kdeapps.enable = true;
+
+            profiles.starsector.enable = true;
+
+            # [TODO] lanzaboote  bullhit
+            boot.loader.systemd-boot.enable = true;
+            boot.loader.efi.canTouchEfiVariables = true;
+            boot.loader.grub.enable = false;
       
             # Do NOT enable secureboot/lanzaboote on this host for now
             profiles.secureboot.enable = false;
@@ -138,7 +149,7 @@
         ];
       };
 
-      nixosConfigurations.USB = lib.nixosSystem {
+        nixosConfigurations.USB = lib.nixosSystem {
         inherit system;
         modules = [
           ./hosts/USB/hardware-configuration.nix
@@ -183,6 +194,7 @@
           home-manager.nixosModules.home-manager {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
             nixpkgs.config.allowUnfree = true;
+            nix.settings.trusted-users = [ "root" "deltarnd" ]; # for delegated rebuilds
 
             boot.loader.systemd-boot.enable = true;
             boot.loader.efi.canTouchEfiVariables = true;
