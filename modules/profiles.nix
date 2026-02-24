@@ -71,6 +71,9 @@ in
         hashedPassword = "$6$AV.V.aqHeffVIoIV$8td7wVIPxnXzV6XPhXLyGMBSWqQHYSNPQ2DOlkhAQrca3e7sr2MN1IjvMtAiROBN97W9U2i2oDyWfNvkU7JOT.";
       };
 
+      # adding trusted users (for remote building)
+      nix.settings.trusted-users = [ "root" "@wheel" ];
+
       # basic firewall
       networking.firewall = {
         enable = true;
