@@ -92,64 +92,77 @@
         specialArgs = {
           inherit unstable;
         };
+
         modules = [
+
           # Surface Go hardware quirks + linux-surface stack
           nixos-hardware.nixosModules.microsoft-surface-go
-          lanzaboote.nixosModules.lanzaboote # [TODO] now nothing boots without lanzaboote. turn it into a proper module!
-      
+          lanzaboote.nixosModules.lanzaboote
+
           ./hosts/GO3/hardware-configuration.nix
           ./modules/profiles.nix
           sops-nix.nixosModules.sops
-      
-          home-manager.nixosModules.home-manager {
+
+          # SYSTEM CONFIG (NixOS)
+          {
             nix.settings.experimental-features = [ "nix-command" "flakes" ];
             nixpkgs.config.allowUnfree = true;
-      
+
             networking.hostName = "go3";
             time.timeZone = "Europe/Warsaw";
+
             networking.networkmanager.enable = true;
-            hardware.microsoft-surface.kernelVersion = "stable"; # surface kernel needs stable
-      
-            # [TODO] desktop profile forces amdgpu; override for Surface (Intel)
+            hardware.microsoft-surface.kernelVersion = "stable";
+
+            # Surface uses Intel, override desktop profile amdgpu
             services.xserver.videoDrivers = lib.mkForce [ "modesetting" ];
-      
+
+            # Stabilize Surface keyboard
+            boot.kernelParams = [ "usbcore.autosuspend=-1" ];
+
+            # Profiles
             profiles.base.enable = true;
             profiles.desktop.enable = true;
             profiles.bluetooth.enable = true;
             profiles.core.enable = true;
             profiles.globalpython.enable = true;
-
+            profiles.lockscreenkeyboard.enable = true;
             profiles.kdeapps.enable = true;
-
             profiles.starsector.enable = true;
 
-            # [TODO] lanzaboote  bullhit
+            # Bootloader
             boot.loader.systemd-boot.enable = true;
             boot.loader.efi.canTouchEfiVariables = true;
             boot.loader.grub.enable = false;
-      
-            # Do NOT enable secureboot/lanzaboote on this host for now
+
+            # Secureboot off for now
             profiles.secureboot.enable = false;
-      
-            # [TODO] Tailscale. Make it into a module. 
+
+            # Tailscale
             services.tailscale = {
               enable = true;
               useRoutingFeatures = "client";
             };
-      
+
+            # SSH
             services.openssh.enable = true;
-      
+
+            system.stateVersion = "25.05";
+          }
+
+          # HOME MANAGER
+          home-manager.nixosModules.home-manager
+
+          {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { pm = plasma-manager; };
             home-manager.users.deltarnd = import ./home/common.nix;
-      
-            system.stateVersion = "25.05";
           }
         ];
       };
 
-        nixosConfigurations.USB = lib.nixosSystem {
+      nixosConfigurations.USB = lib.nixosSystem {
         inherit system;
         modules = [
           ./hosts/USB/hardware-configuration.nix

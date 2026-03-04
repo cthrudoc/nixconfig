@@ -24,6 +24,7 @@ in
     gitlabrunner.enable = lib.mkEnableOption "gitlab runner, for now set up for running the EKG app, using podman, shell executor on host (gitlab is atm on Pi [TODO])";
     ecg-interface.enable = lib.mkEnableOption "Deployment for ECG Interface";
     cloudflared.enable = lib.mkEnableOption "Cloudflared";
+    lockscreenkeyboard.enable = lib.mkEnableOption "keyboardd to log in";
   };
 
   config = lib.mkMerge [
@@ -89,12 +90,31 @@ in
 
     # Desktop (GUI + audio)
     (lib.mkIf cfg.desktop.enable {
-      services.xserver.videoDrivers = [ "amdgpu" ];
+      services.xserver.videoDrivers = lib.mkDefault[ "modesetting" ];
 
-      services.displayManager.sddm.enable = true;
+      # services.displayManager.sddm.enable = true; # redundant since covered by OSK code
       services.desktopManager.plasma6.enable = true;
       services.xserver.enable = true;
-      services.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session
+      # services.displayManager.sddm.wayland.enable = true; # enable virtual keyboard support in Wayland session. Reduntant because of OSK code.
+      services.displayManager.defaultSession = "plasma";
+
+      # OSK
+      #services.displayManager.sddm = {
+      #  enable = true;
+      #  wayland.enable = true;
+      #  theme = "breeze" ;
+      #
+      #  settings = {
+      #    General = {
+      #      InputMethod = "maliit-keyboard";
+      #    };
+      #  };
+      #
+      #  extraPackages = with pkgs; [
+      #    maliit-keyboard
+      #    maliit-framework
+      #  ];
+      #};
 
       services.pipewire = {
         enable = true;
@@ -280,6 +300,7 @@ in
     (lib.mkIf cfg.netsec.enable {
       environment.systemPackages = with pkgs; [
         mullvad-vpn
+        qbittorrent
       ];
       services.mullvad-vpn = {
         enable = true;
@@ -820,5 +841,54 @@ in
 
     })
 
+    (lib.mkIf cfg.lockscreenkeyboard.enable {
+
+    environment.systemPackages = with pkgs; [
+        qt6.qtvirtualkeyboard
+        qt6.qtwayland
+      ];
+
+      services.displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+        theme = "breeze";
+
+        settings = {
+          General = {
+            InputMethod = "qtvirtualkeyboard";
+          };
+        };
+
+        # Make the plugin available to the greeter environment
+        extraPackages = with pkgs; [
+          qt6.qtvirtualkeyboard
+          qt6.qtwayland
+        ];
+      };
+    })
+
   ];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
