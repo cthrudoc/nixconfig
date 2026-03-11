@@ -183,13 +183,13 @@ in
     (lib.mkIf cfg.core.enable {
       environment.systemPackages = with pkgs; [
         obsidian
-        syncthing
         libreoffice-qt
         realvnc-vnc-viewer
         anki-bin
         vscode
       ];
       # in common.nix : VS Code,
+      # in other modules : Syncthing
       # anki-bin : nixized config at this date [[10.10.2025]] is not supported, per NixOS wiki.
     })
 

@@ -86,7 +86,7 @@
           }
         ];
       };
-      
+
       nixosConfigurations.GO3 = lib.nixosSystem {
         inherit system;
         specialArgs = {
@@ -129,6 +129,7 @@
             profiles.lockscreenkeyboard.enable = true;
             profiles.kdeapps.enable = true;
             profiles.starsector.enable = true;
+            profiles.syncthing.enable = true;
 
             # Bootloader
             boot.loader.systemd-boot.enable = true;
