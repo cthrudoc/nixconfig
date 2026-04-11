@@ -14,7 +14,6 @@
       inputs.nixpkgs.follows = "nixpkgs";};
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, lanzaboote, plasma-manager, sops-nix, nixos-hardware, ... }:
@@ -130,6 +129,7 @@
             profiles.kdeapps.enable = true;
             profiles.starsector.enable = true;
             profiles.syncthing.enable = true;
+            profiles.netsec.enable = false;
 
             # Bootloader
             boot.loader.systemd-boot.enable = true;
