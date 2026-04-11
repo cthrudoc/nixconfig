@@ -73,6 +73,15 @@
             profiles.starsector.enable = true;
             profiles.minecraft.enable = true;
             profiles.containers.enable = true;
+            profiles.blender.enable = true;
+
+            # Tailscale
+            services.tailscale = {
+              enable = true;
+              useRoutingFeatures = "client";
+            };
+            services.openssh.enable = true;
+
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;

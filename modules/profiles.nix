@@ -25,6 +25,8 @@ in
     ecg-interface.enable = lib.mkEnableOption "Deployment for ECG Interface";
     cloudflared.enable = lib.mkEnableOption "Cloudflared";
     lockscreenkeyboard.enable = lib.mkEnableOption "keyboardd to log in";
+    wine.enable = lib.mkEnableOption "wine, lutris, all other shit";
+    blender.enable = lib.mkEnableOption "blender";
   };
 
   config = lib.mkMerge [
@@ -867,7 +869,13 @@ in
       };
     })
 
-
+    # 3d modeling and printing
+    (lib.mkIf cfg.blender.enable {
+      environment.systemPackages = with pkgs; [
+        blender
+        prusa-slicer
+      ];
+    })
 
 
   ];
