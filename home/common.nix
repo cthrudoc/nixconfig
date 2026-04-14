@@ -167,6 +167,14 @@
       plasma-apply-colorscheme --accent-color "#AA7300"
       plasma-apply-wallpaperimage "/home/deltarnd/Pictures/wallpapers/night.png"
     '')
+
+    (pkgs.writeShellScriptBin "NRBXR" ''
+      exec sudo nixos-rebuild switch --flake /etc/nixos/nixconfig#BXR
+    '')
+
+    (pkgs.writeShellScriptBin "NRGO3" ''
+      exec sudo nixos-rebuild test --flake /etc/nixos/nixconfig#GO3
+    '')
   ];
 
   programs.plasma = {
