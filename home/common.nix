@@ -8,6 +8,7 @@
   home.username = "deltarnd";
   home.homeDirectory = "/home/deltarnd";
 
+  # [TODO] What *precisely* does using direnv enable?
   programs.direnv.enable = true;
   programs.bash.enable =true;
   programs.direnv.nix-direnv.enable = true;
@@ -36,6 +37,16 @@
   # Making Vault directory exist so Obsidian things don't break
   home.file."Vault/.keep".text = "";
 
+  # Adding VS Code as an option for 'Open Directory with' menu
+  xdg.desktopEntries.vscode-folder = {
+    name = "Visual Studio Code";
+    genericName = "Text Editor";
+    exec = "code %F";
+    terminal = false;
+    categories = [ "Development" "IDE" "TextEditor" ];
+    mimeType = [ "inode/directory" ];
+  };
+
   # VS Code
   programs.vscode = {
     enable = true;
@@ -56,6 +67,12 @@
           esbenp.prettier-vscode # Formatting for HTML/CSS/JS/JSON, etc.
         ])
         ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+            {
+              publisher = "mkhl";
+              name = "direnv";
+              version = "0.17.0";
+              sha256 = "sha256-9sFcfTMeLBGw2ET1snqQ6Uk//D/vcD9AVsZfnUNrWNg=";
+            }
           # {
             # publisher = "vintharas";
             # name = "learn-vim";
@@ -108,6 +125,9 @@
         "python.analysis.typeCheckingMode" = "basic";
         "python.testing.pytestEnabled" = true;
 
+        "terminal.integrated.inheritEnv" = true; # For seamless working with Nix.
+        "python.defaultInterpreterPath" = "'{workspaceFolder}/.venv/bin/python'"; # For seamless working with Nix.
+
         #"workbench.colorTheme" = "Tokyo Night";
 
         "editor.cursorBlinking" = "phase";
@@ -115,6 +135,8 @@
         "editor.lineNumbers" = "on";
 
         "window.titleBarStyle" = "native";
+
+
       };
 
       keybindings = [
